@@ -1,6 +1,7 @@
 import { z } from "zod"
 
 export const difficultySchema = z.enum(["easy", "medium", "hard"])
+export const gameStatusSchema = z.enum(["waiting", "in_progress", "completed", "cancelled"])
 
 export const createGameSchema = z.object({
   difficulty: difficultySchema,
@@ -17,3 +18,50 @@ export const createGameResponseSchema = z.object({
 })
 
 export type CreateGameResponse = z.infer<typeof createGameResponseSchema>
+
+export const playerSchema = z.object({
+  id: z.string(),
+  username: z.string(),
+  email: z.string().optional(),
+  joinedAt: z.string(),
+  isHost: z.boolean(),
+})
+
+export type Player = z.infer<typeof playerSchema>
+
+export const problemSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  difficulty: difficultySchema,
+  examples: z.array(z.object({
+    input: z.string(),
+    output: z.string(),
+    explanation: z.string().optional(),
+  })),
+  constraints: z.array(z.string()),
+  functionSignature: z.string(),
+})
+
+export type Problem = z.infer<typeof problemSchema>
+
+export const gameDataSchema = z.object({
+  _id: z.string(),
+  hostId: z.string(),
+  players: z.array(z.string()),
+  spectators: z.array(z.string()),
+  inviteCode: z.string(),
+  spectatorCode: z.string(),
+  status: gameStatusSchema,
+  problemId: z.string(),
+  problem: problemSchema.optional(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  expiresAt: z.string(),
+  timeLimit: z.number(),
+  difficulty: difficultySchema,
+  startedAt: z.string().optional(),
+  completedAt: z.string().optional(),
+})
+
+export type GameData = z.infer<typeof gameDataSchema>

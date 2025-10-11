@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { User, Settings, Trophy, LogOut, Flame, Loader2 } from "lucide-react"
+import { User, Settings, Trophy, LogOut, Flame, Loader2, Target } from "lucide-react"
 import Link from "next/link"
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
@@ -82,6 +82,12 @@ export function UserDropdown({ user }: UserDropdownProps) {
           <Link href="/leaderboard" className="cursor-pointer">
             <Trophy className="mr-2 h-4 w-4" />
             <span>Leaderboard</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/user/challenges" className="cursor-pointer">
+            <Target className="mr-2 h-4 w-4" />
+            <span>Challenges</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>

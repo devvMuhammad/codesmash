@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { CreateGameFormData, CreateGameResponse, createGameResponseSchema } from "@/lib/validations/game"
 import { getHostId } from "../utils"
 import { API_BASE_URL } from "../config"
@@ -41,5 +41,45 @@ export function useCreateGame() {
 
   return useMutation({
     mutationFn: createGame,
+  })
+}
+
+export interface UserChallenge {
+  _id: string
+  hostId: string
+  players: string[]
+  spectators: string[]
+  inviteCode: string
+  spectatorCode: string
+  status: "waiting" | "in_progress" | "completed" | "cancelled"
+  problemId: string
+  createdAt: string
+  expiresAt: string
+  timeLimit: number
+  difficulty: "easy" | "medium" | "hard"
+  updatedAt: string
+}
+
+export async function getUserChallenges(userId: string): Promise<UserChallenge[]> {
+  const response = await fetch(`${API_BASE_URL}/api/users/${userId}/challenges`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch user challenges: ${response.statusText}`)
+  }
+
+  const challenges = await response.json()
+  return challenges
+}
+
+export function useUserChallenges(userId: string) {
+  return useQuery({
+    queryKey: ["userChallenges", userId],
+    queryFn: () => getUserChallenges(userId),
+    enabled: !!userId,
   })
 }

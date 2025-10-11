@@ -8,19 +8,44 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Panel } from "react-resizable-panels"
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { MonacoEditor } from "./monaco-editor"
+import { useWebSocket } from "@/context/websocket-context"
+import { useSession } from "@/lib/auth-client"
 
 
 interface CurrentPlayerPanelProps {
   collapsed: boolean
+  initialCode: string
 }
 
-export function CurrentPlayerPanel({ collapsed }: CurrentPlayerPanelProps) {
 
-  const [code, setCode] = useState(`function twoSum(nums, target) {
-    // Your solution here
-}`)
+export function CurrentPlayerPanel({ collapsed, initialCode }: CurrentPlayerPanelProps) {
+
+  const { data: session } = useSession()
+  const currentUserId = session?.user.id as string
+
+  const [code, setCode] = useState(initialCode)
+
+  const { socket } = useWebSocket();
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("code_change", (data: { code: string, playerId: string }) => {
+        if (data.playerId !== currentUserId) {
+          return
+        }
+        setCode(data.code)
+      })
+    }
+  }, [socket, currentUserId])
+
+  // on code change
+  const handleCodeChange = useCallback((newCode: string) => {
+    setCode(newCode)
+    socket?.emit("code_change", { code: newCode, playerId: currentUserId })
+  }, [socket, currentUserId])
+
 
   return (
     <Panel defaultSize={collapsed ? 100 : 50} minSize={30}>
@@ -49,7 +74,7 @@ export function CurrentPlayerPanel({ collapsed }: CurrentPlayerPanelProps) {
         <div className="flex-1 min-h-0">
           <MonacoEditor
             value={code}
-            onChange={setCode}
+            onChange={handleCodeChange}
             language="javascript"
             readOnly={false}
             playerId="current"

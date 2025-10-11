@@ -3,8 +3,6 @@
 import { Panel, PanelResizeHandle } from "react-resizable-panels"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { OpponentEditor } from "./opponent-editor"
-import { MonacoEditor } from "./monaco-editor"
 import { useState } from "react"
 
 interface OpponentPanelProps {
@@ -13,10 +11,13 @@ interface OpponentPanelProps {
 }
 
 export function OpponentPanel({ collapsed, onCollapse }: OpponentPanelProps) {
-  const [code, setCode] = useState(`function twoSum(nums, target) {
-    // Opponent's solution
+  const [simulatedCode, setSimulatedCode] = useState(`function twoSum(nums, target) {
+    // Opponent is typing...
     
 }`)
+
+
+
   if (collapsed) {
     return (
       <div className="w-12 border-l border-border/40 bg-muted/10 flex flex-col items-center justify-start pt-2">
@@ -58,17 +59,18 @@ export function OpponentPanel({ collapsed, onCollapse }: OpponentPanelProps) {
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
-          <div className="flex-1 min-h-0">
-            <div className="flex-1 relative h-full">
-              <div className="absolute inset-0 backdrop-blur-[1px] bg-black/10 z-10 pointer-events-none" />
-              <MonacoEditor
-                value={code}
-                onChange={setCode} // No-op for opponent editor
-                language="javascript"
-                readOnly={true}
-                playerId="opponent"
-              />
-            </div>
+          <div className="flex-1 min-h-0 relative">
+            <textarea
+              value={simulatedCode}
+              readOnly
+              className="w-full h-full p-4 bg-background font-mono text-sm resize-none border-none outline-none filter"
+              style={{
+                fontFamily: 'Monaco, "Lucida Console", monospace',
+                lineHeight: '1.5',
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/20 pointer-events-none" />
+
           </div>
         </div>
       </Panel>

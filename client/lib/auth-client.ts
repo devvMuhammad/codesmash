@@ -1,10 +1,10 @@
 import { createAuthClient } from "better-auth/react";
+import { API_BASE_URL } from "./config";
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-if (!apiBaseUrl) {
-  throw new Error("NEXT_PUBLIC_API_BASE_URL environment variable is not set");
-}
-
-export const { useSession, signIn, signOut, getSession } = createAuthClient({
-  baseURL: apiBaseUrl,
+const authClient = createAuthClient({
+  baseURL: API_BASE_URL
 });
+
+
+export type Session = typeof authClient.$Infer.Session
+export const { useSession, signIn, signOut, getSession } = authClient
