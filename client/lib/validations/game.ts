@@ -48,8 +48,7 @@ export type Problem = z.infer<typeof problemSchema>
 export const gameDataSchema = z.object({
   _id: z.string(),
   hostId: z.string(),
-  players: z.array(z.string()),
-  spectators: z.array(z.string()),
+  challengerId: z.string().optional(),
   inviteCode: z.string(),
   spectatorCode: z.string(),
   status: gameStatusSchema,
@@ -65,3 +64,19 @@ export const gameDataSchema = z.object({
 })
 
 export type GameData = z.infer<typeof gameDataSchema>
+
+export const joinGameSchema = z.object({
+  gameId: z.string(),
+  userId: z.string(),
+  inviteCode: z.string(),
+})
+
+export type JoinGameRequest = z.infer<typeof joinGameSchema>
+
+export const joinGameResponseSchema = z.object({
+  success: z.boolean(),
+  role: z.enum(["host", "challenger", "spectator"]),
+  message: z.string(),
+})
+
+export type JoinGameResponse = z.infer<typeof joinGameResponseSchema>

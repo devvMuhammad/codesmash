@@ -31,6 +31,8 @@ export function ShareInviteLink({ gameData, onDone }: ShareInviteLinkProps) {
     }
   }
 
+  const inviteLink = gameData.inviteLink
+
   const shareLink = () => {
     if (!gameData?.inviteLink) return
 

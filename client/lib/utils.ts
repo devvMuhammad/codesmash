@@ -14,3 +14,7 @@ export async function getHostId() {
 
   return session.data.user.id
 }
+
+export function generateInviteLink(inviteCode: string, battleId: string) {
+  return `${window.location.origin}/battle/${battleId}?inviteCode=${inviteCode}`
+}

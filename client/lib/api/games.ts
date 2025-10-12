@@ -47,8 +47,7 @@ export function useCreateGame() {
 export interface UserChallenge {
   _id: string
   hostId: string
-  players: string[]
-  spectators: string[]
+  challengerId?: string
   inviteCode: string
   spectatorCode: string
   status: "waiting" | "in_progress" | "completed" | "cancelled"

@@ -1,4 +1,4 @@
-import { GameData, gameDataSchema } from "@/lib/validations/game"
+import { GameData, gameDataSchema, JoinGameRequest, JoinGameResponse, joinGameResponseSchema } from "@/lib/validations/game"
 import { API_BASE_URL } from "@/lib/config"
 
 export async function getGameById(gameId: string): Promise<GameData> {
@@ -19,4 +19,21 @@ export async function getGameById(gameId: string): Promise<GameData> {
 
   const result = await response.json()
   return gameDataSchema.parse(result)
+}
+
+export async function joinGame(joinRequest: JoinGameRequest): Promise<JoinGameResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/games/join`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(joinRequest),
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to join game: ${response.statusText}`)
+  }
+
+  const result = await response.json()
+  return joinGameResponseSchema.parse(result)
 }

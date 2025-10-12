@@ -32,6 +32,51 @@ CodeSmash is a real-time 1v1 coding platform built with Next.js 15, TypeScript, 
 - **State Management**: React Context with properly typed providers
 - **Real-time**: WebSocket connections for live duels and code sync
 
+### Server Integration
+
+#### Backend Server Communication
+**Server Location**: `../server/` (Express.js + Socket.IO)
+**Server Port**: 8000 (configured via `NEXT_PUBLIC_API_BASE_URL`)
+**Database**: MongoDB via server API
+
+#### API Integration Strategy
+1. **Server-Side Rendering**: Use Server Components for initial data fetching
+2. **Real-time Updates**: Use Client Components with WebSocket connections
+3. **Type Safety**: Zod schemas validate server responses
+
+#### API Endpoints Used
+```typescript
+// Server API endpoints this client integrates with
+POST /api/games              # Create new game
+GET  /api/games/:gameId      # Get single game details
+GET  /api/users/:userId/challenges  # Get user's challenges
+```
+
+#### Integration Files
+- **`lib/api/game.ts`**: Server API client functions
+- **`lib/validations/game.ts`**: Zod schemas matching server types
+- **`lib/config.ts`**: Server endpoint configuration
+- **`context/websocket-context.tsx`**: Socket.IO client integration
+
+#### Server-Client Data Flow
+```
+1. Server Component fetches initial data via API
+2. Client Component receives data as props
+3. WebSocket connects for real-time updates
+4. UI reflects both initial data and real-time changes
+```
+
+#### Type Safety Between Client-Server
+```typescript
+// Client Zod schema matches server TypeScript interface
+export const gameDataSchema = z.object({
+  _id: z.string(),
+  hostId: z.string(),
+  status: gameStatusSchema,
+  // ... matches server IGame interface
+})
+```
+
 ### Directory Structure
 
 #### `app/` - Next.js App Router

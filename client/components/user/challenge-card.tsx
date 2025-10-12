@@ -1,9 +1,11 @@
+"use client";
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { type UserChallenge } from "@/lib/api/games"
-import { Clock, Users, Calendar, Target, Play } from "lucide-react"
-import { formatTimeAgo, formatDate } from "@/lib/utils/date-utils"
+import { Clock, Users, Calendar, Target, Play, Clipboard } from "lucide-react"
+import { formatTimeAgo, formatDate } from "@/lib/date-utils"
 import Link from "next/link"
 
 interface ChallengeCardProps {
@@ -11,6 +13,19 @@ interface ChallengeCardProps {
 }
 
 export function ChallengeCard({ challenge }: ChallengeCardProps) {
+  const [copied, setCopied] = useState(false)
+
+  const copyInviteLink = async () => {
+    const inviteLink = `${window.location.origin}/battle/${challenge._id}?invite=${challenge.inviteCode}`
+    try {
+      await navigator.clipboard.writeText(inviteLink)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error("Failed to copy invite link:", err)
+    }
+  }
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "waiting":
@@ -60,7 +75,7 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Users className="h-4 w-4" />
-            <span>{challenge.players.length} players</span>
+            <span>{challenge.challengerId ? 2 : 1} players</span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="h-4 w-4" />
@@ -83,12 +98,20 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
         )}
 
         {!isGameFinished && (
-          <div className="pt-2">
-            <Button asChild className="w-full">
-              <Link href={`/battle/${challenge.inviteCode}`}>
+          <div className="pt-2 flex gap-2">
+            <Button asChild className="flex-1">
+              <Link href={`/battle/${challenge._id}`}>
                 <Play className="h-4 w-4" />
                 Join Game
               </Link>
+            </Button>
+            <Button
+              onClick={copyInviteLink}
+              variant="outline"
+              size="icon"
+              className="shrink-0"
+            >
+              <Clipboard className={`h-4 w-4 ${copied ? 'text-green-500' : ''}`} />
             </Button>
           </div>
         )}

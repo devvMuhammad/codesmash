@@ -3,11 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Play, Send, Flag, Timer } from "lucide-react"
-import { useDuel } from "@/context/duel-context"
 
 export function DuelControls() {
-  const { duelSession } = useDuel()
-  const { duelState, runCode, submitCode, forfeit } = duelSession
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)
@@ -20,7 +17,7 @@ export function DuelControls() {
     const currentCode = `function twoSum(nums, target) {
     // Current code would be retrieved from Monaco editor
 }`
-    runCode(currentCode)
+    // runCode(currentCode)
   }
 
   const handleSubmit = () => {
@@ -28,7 +25,7 @@ export function DuelControls() {
     const currentCode = `function twoSum(nums, target) {
     // Current code would be retrieved from Monaco editor
 }`
-    submitCode(currentCode)
+    // submitCode(currentCode)
   }
 
   return (
@@ -43,7 +40,7 @@ export function DuelControls() {
           <Send className="h-4 w-4 mr-2" />
           Submit
         </Button>
-        <Button size="sm" variant="destructive" onClick={forfeit}>
+        <Button size="sm" variant="destructive" onClick={() => { }}>
           <Flag className="h-4 w-4 mr-2" />
           Forfeit
         </Button>
@@ -52,7 +49,7 @@ export function DuelControls() {
       {/* Center - Timer */}
       <div className="flex items-center space-x-2">
         <Timer className="h-5 w-5 text-primary" />
-        <span className="text-2xl font-mono font-bold text-foreground">{formatTime(duelState.timeRemaining)}</span>
+        <span className="text-2xl font-mono font-bold text-foreground">{formatTime(0)}</span>
         <Badge variant="secondary">Time Remaining</Badge>
       </div>
 
@@ -60,11 +57,11 @@ export function DuelControls() {
       <div className="flex items-center space-x-4">
         <div className="text-sm">
           <span className="text-muted-foreground">Status: </span>
-          <span className="text-foreground font-medium capitalize">{duelState.status.replace("-", " ")}</span>
+          <span className="text-foreground font-medium capitalize">{'waiting'}</span>
         </div>
         <div className="text-sm">
           <span className="text-muted-foreground">Players: </span>
-          <span className="text-foreground font-medium">{duelState.players.length}/2</span>
+          <span className="text-foreground font-medium">{0}/2</span>
         </div>
       </div>
     </div>

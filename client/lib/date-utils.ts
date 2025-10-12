@@ -26,3 +26,8 @@ export function formatDate(date: string): string {
     minute: '2-digit'
   })
 }
+
+export const formatTimeLimit = (seconds: number) => {
+  const minutes = Math.floor(seconds / 60)
+  return `${minutes} min${minutes !== 1 ? 's' : ''}`
+}
