@@ -15,12 +15,6 @@ export default function DuplicateChallenger({ display }: { display: boolean }) {
       </DialogHeader>
       <div className="flex gap-3 justify-end pt-4">
         <Button
-          variant="outline"
-          onClick={() => window.history.back()}
-        >
-          Go Back
-        </Button>
-        <Button
           onClick={() => setShowDuplicateModal(false)}
         >
           Spectate Battle

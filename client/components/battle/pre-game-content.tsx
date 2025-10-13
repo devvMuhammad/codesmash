@@ -26,6 +26,8 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
   const currentUserId = session?.user?.id
   const userRole = joinResult?.role || (currentUserId === realtimeGameData.hostId ? 'host' : 'spectator')
   const hasChallenger = !!realtimeGameData.challengerId
+  const isHostJoined = realtimeGameData.hostJoined
+  const isChallengerJoined = realtimeGameData.challengerJoined
 
   useEffect(() => {
     if (socket) {
@@ -72,7 +74,8 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
 
   return (
     <div className="h-full flex items-center justify-center p-8">
-      <div className="w-full max-w-2xl space-y-6">
+      <div className="w-full max-w-2xl space-y-2">
+        <p className="text-muted-foreground text-center">Joined as {userRole}</p>
         {/* Main Card */}
         <Card>
           <CardHeader className="text-center pb-4">
@@ -102,21 +105,23 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
               <div className="text-center space-y-4">
                 <div className="flex flex-col items-center space-y-3">
                   <Avatar className="size-20">
-                    <AvatarImage src="" alt="Host avatar" />
+                    <AvatarImage src={realtimeGameData.host?.image || ""} alt="Host avatar" />
                     <AvatarFallback className="text-lg font-semibold">
-                      {getUserInitials(session?.user?.name)}
+                      {getUserInitials(realtimeGameData.host?.name || session?.user?.name)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h3 className="font-semibold text-lg">
-                      {session?.user?.name || "Host"}
+                      {realtimeGameData.host?.name || session?.user?.name || "Host"}
                     </h3>
                     <p className="text-sm text-muted-foreground">Host</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-center gap-2">
-                  <div className="h-2 w-2 bg-green-500 rounded-full" />
-                  <span className="text-xs text-green-600 font-medium">Joined</span>
+                  <div className={`h-2 w-2 rounded-full ${isHostJoined ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                  <span className={`text-xs font-medium ${isHostJoined ? 'text-green-600' : 'text-yellow-600'}`}>
+                    {isHostJoined ? 'Joined' : 'Connecting...'}
+                  </span>
                 </div>
               </div>
 
@@ -124,29 +129,37 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
               <div className="text-center space-y-4">
                 <div className="flex flex-col items-center space-y-3">
                   <Avatar className="size-20">
-                    <AvatarImage src="" alt="Challenger avatar" />
+                    <AvatarImage src={realtimeGameData.challenger?.image || ""} alt="Challenger avatar" />
                     <AvatarFallback className="text-lg font-semibold">
-                      {hasChallenger ? "C" : "?"}
+                      {hasChallenger ? getUserInitials(realtimeGameData.challenger?.name) : "?"}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h3 className="font-semibold text-lg">
-                      {hasChallenger ? "Challenger" : "Not joined"}
+                      {hasChallenger ? (realtimeGameData.challenger?.name || "Challenger") : "Not joined"}
                     </h3>
                     <p className="text-sm text-muted-foreground">Challenger</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-center gap-2">
-                  <div className={`h-2 w-2 rounded-full ${hasChallenger ? 'bg-green-500' : 'bg-muted-foreground/30'}`} />
-                  <span className={`text-xs font-medium ${hasChallenger ? 'text-green-600' : 'text-muted-foreground'}`}>
-                    {hasChallenger ? 'Joined' : 'Waiting...'}
+                  <div className={`h-2 w-2 rounded-full ${hasChallenger && isChallengerJoined ? 'bg-green-500' :
+                    hasChallenger ? 'bg-yellow-500' :
+                      'bg-muted-foreground/30'
+                    }`} />
+                  <span className={`text-xs font-medium ${hasChallenger && isChallengerJoined ? 'text-green-600' :
+                    hasChallenger ? 'text-yellow-600' :
+                      'text-muted-foreground'
+                    }`}>
+                    {hasChallenger && isChallengerJoined ? 'Joined' :
+                      hasChallenger ? 'Connecting...' :
+                        'Waiting...'}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Start Button for Host when challenger joined */}
-            {currentUserId === realtimeGameData.hostId && hasChallenger && (
+            {/* Start Button for Host when both players have joined */}
+            {currentUserId === realtimeGameData.hostId && hasChallenger && isHostJoined && isChallengerJoined && (
               <div className="flex justify-center mt-8">
                 <Button size="lg" className="px-8">
                   <Trophy className="h-4 w-4 mr-2" />
@@ -158,7 +171,9 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
             {/* Status Message for Challenger */}
             {currentUserId === realtimeGameData.challengerId && (
               <div className="text-center mt-6">
-                <Badge variant="secondary">Waiting for host to start</Badge>
+                <Badge variant="secondary">
+                  {isHostJoined && isChallengerJoined ? 'Waiting for host to start' : 'Waiting for all players to join'}
+                </Badge>
               </div>
             )}
           </CardContent>

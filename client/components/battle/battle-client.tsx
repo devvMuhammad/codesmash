@@ -38,45 +38,43 @@ export function BattleClientContent({ gameData, joinResult }: BattleClientConten
   }, [gameData._id, connect, disconnect])
 
   return (
-    <>
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       <DuplicateChallenger display={showDuplicateModal} />
-      <div className="h-screen flex flex-col bg-background overflow-hidden">
-        <BattleNavbar />
-        <div className="flex-1 flex min-h-0">
-          <PanelGroup direction="horizontal">
-            <ProblemDescription
-              collapsed={problemSidebarCollapsed}
-              onCollapse={setProblemSidebarCollapsed}
-            />
-            <Panel>
-              <PanelGroup direction="vertical">
-                <Panel defaultSize={consoleCollapsed ? 100 : 70}>
-                  {gameData.status === 'waiting' ? (
-                    <PreGameContent gameData={gameData} joinResult={joinResult} />
-                  ) : (
-                    <PanelGroup direction="horizontal">
-                      <CurrentPlayerPanel
-                        collapsed={opponentEditorCollapsed}
-                        initialCode={gameData.problem?.functionSignature || initialCode}
-                      />
-                      <OpponentPanel
-                        collapsed={opponentEditorCollapsed}
-                        onCollapse={setOpponentEditorCollapsed}
-                      />
-                    </PanelGroup>
-                  )}
-                </Panel>
-                {gameData.status !== 'waiting' && (
-                  <ConsolePanel
-                    collapsed={consoleCollapsed}
-                    onCollapse={setConsoleCollapsed}
-                  />
+      <BattleNavbar />
+      <div className="flex-1 flex min-h-0">
+        <PanelGroup direction="horizontal">
+          <ProblemDescription
+            collapsed={problemSidebarCollapsed}
+            onCollapse={setProblemSidebarCollapsed}
+          />
+          <Panel>
+            <PanelGroup direction="vertical">
+              <Panel defaultSize={consoleCollapsed ? 100 : 70}>
+                {gameData.status === 'waiting' ? (
+                  <PreGameContent gameData={gameData} joinResult={joinResult} />
+                ) : (
+                  <PanelGroup direction="horizontal">
+                    <CurrentPlayerPanel
+                      collapsed={opponentEditorCollapsed}
+                      initialCode={gameData.problem?.functionSignature || initialCode}
+                    />
+                    <OpponentPanel
+                      collapsed={opponentEditorCollapsed}
+                      onCollapse={setOpponentEditorCollapsed}
+                    />
+                  </PanelGroup>
                 )}
-              </PanelGroup>
-            </Panel>
-          </PanelGroup>
-        </div>
+              </Panel>
+              {gameData.status !== 'waiting' && (
+                <ConsolePanel
+                  collapsed={consoleCollapsed}
+                  onCollapse={setConsoleCollapsed}
+                />
+              )}
+            </PanelGroup>
+          </Panel>
+        </PanelGroup>
       </div>
-    </>
+    </div>
   )
 }

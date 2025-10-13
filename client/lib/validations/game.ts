@@ -6,7 +6,7 @@ export const gameStatusSchema = z.enum(["waiting", "in_progress", "completed", "
 export const createGameSchema = z.object({
   difficulty: difficultySchema,
   timeLimit: z.number().min(15).max(120), // 15 minutes to 2 hours
-  expiresIn: z.number().min(15).max(1440), // 15 minutes to 1 day in minutes
+  expiresIn: z.number().min(15).max(1440), // 15 minutes to 1 day
 })
 
 export type CreateGameFormData = z.infer<typeof createGameSchema>
@@ -18,6 +18,15 @@ export const createGameResponseSchema = z.object({
 })
 
 export type CreateGameResponse = z.infer<typeof createGameResponseSchema>
+
+export const userSchema = z.object({
+  _id: z.string(),
+  name: z.string().optional(),
+  email: z.string().optional(),
+  image: z.string().optional(),
+})
+
+export type User = z.infer<typeof userSchema>
 
 export const playerSchema = z.object({
   id: z.string(),
@@ -47,20 +56,23 @@ export type Problem = z.infer<typeof problemSchema>
 
 export const gameDataSchema = z.object({
   _id: z.string(),
-  hostId: z.string(),
-  challengerId: z.string().optional(),
+  hostId: z.string(), // Keep for compatibility with frontend
+  challengerId: z.string().optional(), // Keep for compatibility with frontend
   inviteCode: z.string(),
-  spectatorCode: z.string(),
   status: gameStatusSchema,
   problemId: z.string(),
   problem: problemSchema.optional(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-  expiresAt: z.string(),
   timeLimit: z.number(),
   difficulty: difficultySchema,
-  startedAt: z.string().optional(),
-  completedAt: z.string().optional(),
+  hostJoined: z.boolean(),
+  challengerJoined: z.boolean(),
+  hostCode: z.string(),
+  challengerCode: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  // Populated user data from MongoDB
+  host: userSchema.optional(),
+  challenger: userSchema.optional(),
 })
 
 export type GameData = z.infer<typeof gameDataSchema>

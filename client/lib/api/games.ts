@@ -4,10 +4,9 @@ import { getHostId } from "../utils"
 import { API_BASE_URL } from "../config"
 
 export interface CreateGameRequest {
-  hostId: string
+  host: string
   difficulty: "easy" | "medium" | "hard"
   timeLimit: number // in seconds
-  expiresAt: Date
 }
 
 export async function createGame(data: CreateGameFormData): Promise<CreateGameResponse> {
@@ -15,10 +14,9 @@ export async function createGame(data: CreateGameFormData): Promise<CreateGameRe
 
   // Convert form data to API request format
   const requestData: CreateGameRequest = {
-    hostId,
+    host: hostId,
     difficulty: data.difficulty,
     timeLimit: data.timeLimit * 60, // Convert minutes to seconds
-    expiresAt: new Date(Date.now() + data.expiresIn * 60 * 1000), // Convert minutes to milliseconds
   }
 
   const response = await fetch(API_BASE_URL + "/api/games", {

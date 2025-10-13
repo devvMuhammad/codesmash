@@ -18,6 +18,7 @@ export async function getGameById(gameId: string): Promise<GameData> {
   }
 
   const result = await response.json()
+  console.log("result", result)
   return gameDataSchema.parse(result)
 }
 
