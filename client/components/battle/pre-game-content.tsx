@@ -6,11 +6,12 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Copy, Clock, Trophy, CheckCircle } from "lucide-react"
+import { CopyButton } from "@/components/ui/copy-button"
+import { Clock, Trophy } from "lucide-react"
 import { GameData, JoinGameResponse } from "@/lib/validations/game"
 import { useSession } from "@/lib/auth-client"
 import { formatTimeLimit } from "@/lib/date-utils"
-import { generateInviteLink } from "@/lib/utils"
+import { generateInviteLink, getUserInitials } from "@/lib/utils"
 
 interface PreGameContentProps {
   gameData: GameData
@@ -20,7 +21,6 @@ interface PreGameContentProps {
 export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
   const { data: session } = useSession()
   const { socket } = useWebSocket()
-  const [copied, setCopied] = useState(false)
   const [realtimeGameData, setRealtimeGameData] = useState(gameData)
 
   const currentUserId = session?.user?.id
@@ -28,6 +28,9 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
   const hasChallenger = !!realtimeGameData.challengerId
   const isHostJoined = realtimeGameData.hostJoined
   const isChallengerJoined = realtimeGameData.challengerJoined
+
+  const inviteLink = generateInviteLink(realtimeGameData.inviteCode, realtimeGameData._id)
+
 
   useEffect(() => {
     if (socket) {
@@ -58,19 +61,6 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
       }
     }
   }, [socket, joinResult, userRole, gameData._id])
-
-  const copyInviteLink = async () => {
-    const inviteLink = generateInviteLink(realtimeGameData.inviteCode, realtimeGameData._id)
-    await navigator.clipboard.writeText(inviteLink)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
-
-  // Get user initials for avatar fallback
-  const getUserInitials = (name: string | undefined) => {
-    if (!name) return "?"
-    return name.split(" ").map(n => n[0]).join("").toUpperCase()
-  }
 
   return (
     <div className="h-full flex items-center justify-center p-8">
@@ -181,24 +171,12 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
 
         {/* Invite Button */}
         <div className="flex justify-center">
-          <Button
-            onClick={copyInviteLink}
-            variant={copied ? "outline" : "default"}
-            size="lg"
-            className="px-8"
+          <CopyButton
+            textToCopy={inviteLink}
+            className="px-8 mt-2"
           >
-            {copied ? (
-              <>
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Invite Link
-              </>
-            )}
-          </Button>
+            Copy Invite Link
+          </CopyButton>
         </div>
       </div>
     </div>

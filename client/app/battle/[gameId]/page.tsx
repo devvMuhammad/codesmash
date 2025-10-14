@@ -32,16 +32,19 @@ export default async function DuelPage({ params, searchParams }: DuelPageProps) 
   let gameData
   let joinResult: JoinGameResponse | null = null
 
-  // First, try to join the game if there is an invite code
-  if (inviteCode) {
-    try {
-      joinResult = await joinGame({
-        gameId,
-        userId: session.user.id,
-        inviteCode
-      })
-    } catch (error) {
-      console.error("Failed to join game:", error)
+  try {
+    joinResult = await joinGame({
+      gameId,
+      userId: session.user.id,
+      inviteCode
+    })
+  } catch (error) {
+    console.error("Failed to join game:", error)
+    // fallback to spectator role
+    joinResult = {
+      success: false,
+      role: "spectator",
+      message: "Failed to join game"
     }
   }
 
@@ -56,6 +59,6 @@ export default async function DuelPage({ params, searchParams }: DuelPageProps) 
   console.log(joinResult?.role !== "host" ? joinResult : "host joined the game")
 
   return <WebSocketProvider>
-    <BattleClientContent gameData={gameData} joinResult={joinResult} />
+    <BattleClientContent gameData={gameData} joinResult={joinResult} user={session.user} />
   </WebSocketProvider>
 }

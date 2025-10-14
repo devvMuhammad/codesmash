@@ -22,7 +22,7 @@ export async function getGameById(gameId: string): Promise<GameData> {
   return gameDataSchema.parse(result)
 }
 
-export async function joinGame(joinRequest: JoinGameRequest): Promise<JoinGameResponse> {
+export async function joinGame(joinRequest: Omit<JoinGameRequest, "inviteCode"> & { inviteCode?: string }): Promise<JoinGameResponse> {
   const response = await fetch(`${API_BASE_URL}/api/games/join`, {
     method: "POST",
     headers: {

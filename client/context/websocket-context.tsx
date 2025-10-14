@@ -3,10 +3,12 @@
 import { createContext, useContext, useRef, type ReactNode } from "react"
 import { io, type Socket } from "socket.io-client"
 import { API_BASE_URL } from "@/lib/config"
+import { getSession, Session } from "@/lib/auth-client"
+import { PlayerRolesType } from "@/lib/validations/game"
 
 interface WebSocketContextType {
   socket: Socket | null
-  connect: (gameId: string) => void
+  connect: (gameId: string, role: PlayerRolesType, user: Session["user"] | null) => void
   disconnect: () => void
 }
 
@@ -19,18 +21,16 @@ interface WebSocketProviderProps {
 export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const socketRef = useRef<Socket | null>(null)
 
-  const connect = (gameId: string) => {
-    if (socketRef.current?.connected) {
-      return
-    }
-
+  const connect = async (gameId: string, role: PlayerRolesType, user: Session["user"] | null) => {
     if (socketRef.current) {
-      socketRef.current.disconnect()
+      return socketRef.current
     }
 
     const newSocket = io(API_BASE_URL, {
       auth: {
-        gameId: gameId
+        gameId: gameId,
+        role: role,
+        user: user,
       }
     })
 
@@ -43,7 +43,9 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     })
 
     socketRef.current = newSocket
+    return newSocket
   }
+
 
   const disconnect = () => {
     if (socketRef.current) {

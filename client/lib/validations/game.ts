@@ -92,3 +92,4 @@ export const joinGameResponseSchema = z.object({
 })
 
 export type JoinGameResponse = z.infer<typeof joinGameResponseSchema>
+export type PlayerRolesType = JoinGameResponse['role']

@@ -2,11 +2,11 @@ import type React from "react"
 import type { Metadata } from "next"
 import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
-import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import { ThemeProvider } from '@/providers/theme-provider'
 import { QueryProvider } from '@/providers/query-provider'
 import "./globals.css"
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   title: "CodeSmash - 1v1 Coding Platform",
@@ -27,7 +27,7 @@ export default function RootLayout({
             <Suspense fallback={null}>{children}</Suspense>
           </ThemeProvider>
         </QueryProvider>
-        <Analytics />
+        <Toaster />
       </body>
     </html>
   )
