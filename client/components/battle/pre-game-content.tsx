@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useWebSocket } from "@/context/websocket-context"
+import { useGameStore } from "@/providers/game-store-provider"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -20,47 +19,28 @@ interface PreGameContentProps {
 
 export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
   const { data: session } = useSession()
-  const { socket } = useWebSocket()
-  const [realtimeGameData, setRealtimeGameData] = useState(gameData)
+
+  // Listen to connection states from Zustand store
+  const isConnected = useGameStore((state) => state.isConnected)
+  const opponentConnected = useGameStore((state) => state.opponentConnected)
 
   const currentUserId = session?.user?.id
-  const userRole = joinResult?.role || (currentUserId === realtimeGameData.hostId ? 'host' : 'spectator')
-  const hasChallenger = !!realtimeGameData.challengerId
-  const isHostJoined = realtimeGameData.hostJoined
-  const isChallengerJoined = realtimeGameData.challengerJoined
+  const isHost = currentUserId === gameData.hostId
+  const userRole = joinResult?.role || (currentUserId === gameData.hostId ? 'host' : 'spectator')
+  const hasChallenger = !!gameData.challengerId
 
-  const inviteLink = generateInviteLink(realtimeGameData.inviteCode, realtimeGameData._id)
+  // connections
+  const isHostJoined = userRole === 'host' ? isConnected : opponentConnected
+  const isChallengerJoined = userRole === 'challenger' ? isConnected : opponentConnected
 
+  // condition variables
+  const bothPlayersJoined = hasChallenger && isHostJoined && isChallengerJoined
+  const canHostStartGame = currentUserId === gameData.hostId && bothPlayersJoined
+  const shouldShowWaitingForHost = currentUserId === gameData.challengerId
+  const challengerHasJoinedButDisconnected = hasChallenger && !isChallengerJoined
 
-  useEffect(() => {
-    if (socket) {
-      // Listen for player join events
-      socket.on("player_joined", (data: { message: string; role: string; gameData: GameData }) => {
-        setRealtimeGameData(data.gameData)
-      })
+  const inviteLink = generateInviteLink(gameData.inviteCode, gameData._id)
 
-      // Listen for player disconnect events
-      socket.on("player_disconnected", (data: { message: string; gameData: GameData }) => {
-        setRealtimeGameData(data.gameData)
-      })
-
-      // Send join notification when component mounts
-      if (joinResult?.success) {
-        socket.emit("player_join_notification", {
-          gameId: gameData._id,
-          role: userRole,
-          message: joinResult.message
-        })
-      }
-    }
-
-    return () => {
-      if (socket) {
-        socket.off("player_joined")
-        socket.off("player_disconnected")
-      }
-    }
-  }, [socket, joinResult, userRole, gameData._id])
 
   return (
     <div className="h-full flex items-center justify-center p-8">
@@ -75,14 +55,14 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
                 <Trophy className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Difficulty:</span>
                 <Badge variant="outline" className="capitalize">
-                  {realtimeGameData.difficulty}
+                  {gameData.difficulty}
                 </Badge>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Time Limit:</span>
                 <Badge variant="outline">
-                  {formatTimeLimit(realtimeGameData.timeLimit)}
+                  {formatTimeLimit(gameData.timeLimit)}
                 </Badge>
               </div>
             </div>
@@ -95,22 +75,22 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
               <div className="text-center space-y-4">
                 <div className="flex flex-col items-center space-y-3">
                   <Avatar className="size-20">
-                    <AvatarImage src={realtimeGameData.host?.image || ""} alt="Host avatar" />
+                    <AvatarImage src={gameData.host?.image || ""} alt="Host avatar" />
                     <AvatarFallback className="text-lg font-semibold">
-                      {getUserInitials(realtimeGameData.host?.name || session?.user?.name)}
+                      {getUserInitials(gameData.host?.name || session?.user?.name)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h3 className="font-semibold text-lg">
-                      {realtimeGameData.host?.name || session?.user?.name || "Host"}
+                      {gameData.host?.name || session?.user?.name || "Host"}
                     </h3>
                     <p className="text-sm text-muted-foreground">Host</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-center gap-2">
-                  <div className={`h-2 w-2 rounded-full ${isHostJoined ? 'bg-green-500' : 'bg-yellow-500'}`} />
-                  <span className={`text-xs font-medium ${isHostJoined ? 'text-green-600' : 'text-yellow-600'}`}>
-                    {isHostJoined ? 'Joined' : 'Connecting...'}
+                  <div className={`h-2 w-2 rounded-full ${isHostJoined ? 'bg-green-500' : 'bg-destructive'}`} />
+                  <span className={`text-xs font-medium ${isHostJoined ? 'text-green-600' : 'text-destructive'}`}>
+                    {isHostJoined ? 'Connected' : 'Disconnected'}
                   </span>
                 </div>
               </div>
@@ -119,29 +99,29 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
               <div className="text-center space-y-4">
                 <div className="flex flex-col items-center space-y-3">
                   <Avatar className="size-20">
-                    <AvatarImage src={realtimeGameData.challenger?.image || ""} alt="Challenger avatar" />
+                    <AvatarImage src={gameData.challenger?.image || ""} alt="Challenger avatar" />
                     <AvatarFallback className="text-lg font-semibold">
-                      {hasChallenger ? getUserInitials(realtimeGameData.challenger?.name) : "?"}
+                      {hasChallenger ? getUserInitials(gameData.challenger?.name) : "?"}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h3 className="font-semibold text-lg">
-                      {hasChallenger ? (realtimeGameData.challenger?.name || "Challenger") : "Not joined"}
+                      {hasChallenger ? (gameData.challenger?.name || "Challenger") : "Not joined"}
                     </h3>
                     <p className="text-sm text-muted-foreground">Challenger</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-center gap-2">
                   <div className={`h-2 w-2 rounded-full ${hasChallenger && isChallengerJoined ? 'bg-green-500' :
-                    hasChallenger ? 'bg-yellow-500' :
+                    challengerHasJoinedButDisconnected ? 'bg-destructive' :
                       'bg-muted-foreground/30'
                     }`} />
                   <span className={`text-xs font-medium ${hasChallenger && isChallengerJoined ? 'text-green-600' :
-                    hasChallenger ? 'text-yellow-600' :
+                    challengerHasJoinedButDisconnected ? 'text-destructive' :
                       'text-muted-foreground'
                     }`}>
                     {hasChallenger && isChallengerJoined ? 'Joined' :
-                      hasChallenger ? 'Connecting...' :
+                      challengerHasJoinedButDisconnected ? 'Disconnected' :
                         'Waiting...'}
                   </span>
                 </div>
@@ -149,7 +129,7 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
             </div>
 
             {/* Start Button for Host when both players have joined */}
-            {currentUserId === realtimeGameData.hostId && hasChallenger && isHostJoined && isChallengerJoined && (
+            {canHostStartGame && (
               <div className="flex justify-center mt-8">
                 <Button size="lg" className="px-8">
                   <Trophy className="h-4 w-4 mr-2" />
@@ -159,10 +139,10 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
             )}
 
             {/* Status Message for Challenger */}
-            {currentUserId === realtimeGameData.challengerId && (
+            {shouldShowWaitingForHost && (
               <div className="text-center mt-6">
                 <Badge variant="secondary">
-                  {isHostJoined && isChallengerJoined ? 'Waiting for host to start' : 'Waiting for all players to join'}
+                  {bothPlayersJoined ? 'Waiting for host to start' : 'Waiting for all players to join'}
                 </Badge>
               </div>
             )}
@@ -170,14 +150,14 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
         </Card>
 
         {/* Invite Button */}
-        <div className="flex justify-center">
+        {isHost && <div className="flex justify-center">
           <CopyButton
             textToCopy={inviteLink}
             className="px-8 mt-2"
           >
             Copy Invite Link
           </CopyButton>
-        </div>
+        </div>}
       </div>
     </div>
   )

@@ -8,43 +8,39 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Panel } from "react-resizable-panels"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useContext } from "react"
 import { MonacoEditor } from "./monaco-editor"
-import { useWebSocket } from "@/context/websocket-context"
-import { useSession } from "@/lib/auth-client"
-
+import { useGameStore } from "@/providers/game-store-provider"
+import { GameStoreContext } from "@/providers/game-store-provider"
+import { useShallow } from 'zustand/react/shallow'
 
 interface CurrentPlayerPanelProps {
   collapsed: boolean
   initialCode: string
+  onCodeUpdate?: (code: string) => void
 }
 
-
-export function CurrentPlayerPanel({ collapsed, initialCode }: CurrentPlayerPanelProps) {
-
-  const { data: session } = useSession()
-  const currentUserId = session?.user.id as string
-
-  const [code, setCode] = useState(initialCode)
-
-  const { socket } = useWebSocket();
-
-  useEffect(() => {
-    if (socket) {
-      socket.on("code_change", (data: { code: string, playerId: string }) => {
-        if (data.playerId !== currentUserId) {
-          return
-        }
-        setCode(data.code)
-      })
-    }
-  }, [socket, currentUserId])
+export function CurrentPlayerPanel({ collapsed, initialCode, onCodeUpdate }: CurrentPlayerPanelProps) {
+  const { currentPlayerCode, isConnected } = useGameStore(
+    useShallow((state) => ({
+      currentPlayerCode: state.currentPlayerCode,
+      isConnected: state.isConnected,
+    }))
+  )
+  const gameStoreApi = useContext(GameStoreContext)
 
   // on code change
   const handleCodeChange = useCallback((newCode: string) => {
-    setCode(newCode)
-    socket?.emit("code_change", { code: newCode, playerId: currentUserId })
-  }, [socket, currentUserId])
+    // Update store directly
+    if (gameStoreApi) {
+      gameStoreApi.setState((state) => ({ ...state, currentPlayerCode: newCode }))
+    }
+
+    // Emit to WebSocket via callback
+    if (onCodeUpdate) {
+      onCodeUpdate(newCode)
+    }
+  }, [gameStoreApi, onCodeUpdate])
 
 
   return (
@@ -54,8 +50,10 @@ export function CurrentPlayerPanel({ collapsed, initialCode }: CurrentPlayerPane
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-muted-foreground">You</span>
             <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-xs text-green-400">Connected</span>
+              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              <span className={`text-xs ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
+                {isConnected ? 'Connected' : 'Disconnected'}
+              </span>
             </div>
           </div>
           <Select defaultValue="javascript">
@@ -73,7 +71,7 @@ export function CurrentPlayerPanel({ collapsed, initialCode }: CurrentPlayerPane
         </div>
         <div className="flex-1 min-h-0">
           <MonacoEditor
-            value={code}
+            value={currentPlayerCode}
             onChange={handleCodeChange}
             language="javascript"
             readOnly={false}
