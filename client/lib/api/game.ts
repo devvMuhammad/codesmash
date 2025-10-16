@@ -18,7 +18,6 @@ export async function getGameById(gameId: string): Promise<GameData> {
   }
 
   const result = await response.json()
-  console.log("result", result)
   return gameDataSchema.parse(result)
 }
 
@@ -30,10 +29,6 @@ export async function joinGame(joinRequest: Omit<JoinGameRequest, "inviteCode"> 
     },
     body: JSON.stringify(joinRequest),
   })
-
-  if (!response.ok) {
-    throw new Error(`Failed to join game: ${response.statusText}`)
-  }
 
   const result = await response.json()
   return joinGameResponseSchema.parse(result)

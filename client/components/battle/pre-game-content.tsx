@@ -11,6 +11,7 @@ import { GameData, JoinGameResponse } from "@/lib/validations/game"
 import { useSession } from "@/lib/auth-client"
 import { formatTimeLimit } from "@/lib/date-utils"
 import { generateInviteLink, getUserInitials } from "@/lib/utils"
+import { useGame } from "@/context/game-websocket-context"
 
 interface PreGameContentProps {
   gameData: GameData
@@ -19,10 +20,13 @@ interface PreGameContentProps {
 
 export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
   const { data: session } = useSession()
+  const { challengerQuit } = useGame()
 
-  // Listen to connection states from Zustand store
+  // Listen to connection states and player data from Zustand store
   const isConnected = useGameStore((state) => state.isConnected)
   const opponentConnected = useGameStore((state) => state.opponentConnected)
+  const currentPlayerData = useGameStore((state) => state.currentPlayerData)
+  const opponentData = useGameStore((state) => state.opponentData)
 
   const currentUserId = session?.user?.id
   const isHost = currentUserId === gameData.hostId
@@ -37,7 +41,6 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
   const bothPlayersJoined = hasChallenger && isHostJoined && isChallengerJoined
   const canHostStartGame = currentUserId === gameData.hostId && bothPlayersJoined
   const shouldShowWaitingForHost = currentUserId === gameData.challengerId
-  const challengerHasJoinedButDisconnected = hasChallenger && !isChallengerJoined
 
   const inviteLink = generateInviteLink(gameData.inviteCode, gameData._id)
 
@@ -69,20 +72,39 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
           </CardHeader>
 
           <CardContent>
+            {/* Status Message for Challenger - moved above players grid */}
+            {shouldShowWaitingForHost && (
+              <div className="text-center mb-6">
+                <Badge variant="secondary">
+                  {bothPlayersJoined ? 'Waiting for host to start' : 'Waiting for all players to join'}
+                </Badge>
+              </div>
+            )}
+
             {/* Players Grid */}
             <div className="grid grid-cols-2 gap-8">
               {/* Host Side */}
               <div className="text-center space-y-4">
                 <div className="flex flex-col items-center space-y-3">
                   <Avatar className="size-20">
-                    <AvatarImage src={gameData.host?.image || ""} alt="Host avatar" />
+                    <AvatarImage src={
+                      userRole === "host"
+                        ? (currentPlayerData?.image || "")
+                        : (opponentData?.image || "")
+                    } alt="Host avatar" />
                     <AvatarFallback className="text-lg font-semibold">
-                      {getUserInitials(gameData.host?.name || session?.user?.name)}
+                      {getUserInitials(
+                        userRole === "host"
+                          ? (currentPlayerData?.name || session?.user?.name)
+                          : (opponentData?.name)
+                      )}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h3 className="font-semibold text-lg">
-                      {gameData.host?.name || session?.user?.name || "Host"}
+                      {userRole === "host"
+                        ? (currentPlayerData?.name || session?.user?.name || "Host")
+                        : (opponentData?.name || "Host")}
                     </h3>
                     <p className="text-sm text-muted-foreground">Host</p>
                   </div>
@@ -99,30 +121,30 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
               <div className="text-center space-y-4">
                 <div className="flex flex-col items-center space-y-3">
                   <Avatar className="size-20">
-                    <AvatarImage src={gameData.challenger?.image || ""} alt="Challenger avatar" />
+                    <AvatarImage src={
+                      userRole === "challenger"
+                        ? (currentPlayerData?.image || "")
+                        : (opponentData?.image || "")
+                    } alt="Challenger avatar" />
                     <AvatarFallback className="text-lg font-semibold">
-                      {hasChallenger ? getUserInitials(gameData.challenger?.name) : "?"}
+                      {userRole === "challenger"
+                        ? getUserInitials(currentPlayerData?.name)
+                        : (hasChallenger ? getUserInitials(opponentData?.name) : "?")}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h3 className="font-semibold text-lg">
-                      {hasChallenger ? (gameData.challenger?.name || "Challenger") : "Not joined"}
+                      {userRole === "challenger"
+                        ? (currentPlayerData?.name || "Challenger")
+                        : opponentData?.name || "Challenger"}
                     </h3>
                     <p className="text-sm text-muted-foreground">Challenger</p>
                   </div>
                 </div>
                 <div className="flex items-center justify-center gap-2">
-                  <div className={`h-2 w-2 rounded-full ${hasChallenger && isChallengerJoined ? 'bg-green-500' :
-                    challengerHasJoinedButDisconnected ? 'bg-destructive' :
-                      'bg-muted-foreground/30'
-                    }`} />
-                  <span className={`text-xs font-medium ${hasChallenger && isChallengerJoined ? 'text-green-600' :
-                    challengerHasJoinedButDisconnected ? 'text-destructive' :
-                      'text-muted-foreground'
-                    }`}>
-                    {hasChallenger && isChallengerJoined ? 'Joined' :
-                      challengerHasJoinedButDisconnected ? 'Disconnected' :
-                        'Waiting...'}
+                  <div className={`h-2 w-2 rounded-full ${isChallengerJoined ? 'bg-green-500' : 'bg-destructive'}`} />
+                  <span className={`text-xs font-medium ${isChallengerJoined ? 'text-green-600' : 'text-destructive'}`}>
+                    {isChallengerJoined ? 'Connected' : 'Disconnected'}
                   </span>
                 </div>
               </div>
@@ -138,12 +160,17 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
               </div>
             )}
 
-            {/* Status Message for Challenger */}
+            {/* Leave Game Button for Challenger */}
             {shouldShowWaitingForHost && (
-              <div className="text-center mt-6">
-                <Badge variant="secondary">
-                  {bothPlayersJoined ? 'Waiting for host to start' : 'Waiting for all players to join'}
-                </Badge>
+              <div className="flex justify-center mt-6">
+                <Button
+                  variant="destructive"
+                  size="lg"
+                  className="px-8"
+                  onClick={challengerQuit}
+                >
+                  Leave Game
+                </Button>
               </div>
             )}
           </CardContent>

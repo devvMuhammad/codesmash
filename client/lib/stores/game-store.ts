@@ -1,9 +1,13 @@
 import { createStore } from 'zustand/vanilla'
-import { PlayerRolesType } from '@/lib/validations/game'
+import { PlayerRolesType, User } from '@/lib/validations/game'
 
 export interface GameState {
   // Core game data
   userRole: PlayerRolesType | null
+
+  // Player data
+  currentPlayerData: User | null
+  opponentData: User | null
 
   // Game state
   timeRemaining: number
@@ -22,12 +26,18 @@ export interface GameActions {
   // Connection actions
   setConnected: (connected: boolean) => void
   setOpponentConnected: (connected: boolean) => void
+
+  // Player data actions
+  setCurrentPlayerData: (data: User | null) => void
+  setOpponentData: (data: User | null) => void
 }
 
 export type GameStore = GameState & GameActions
 
 export const defaultInitState: GameState = {
   userRole: null,
+  currentPlayerData: null,
+  opponentData: null,
   timeRemaining: 0,
   gameStatus: "waiting",
   currentPlayerCode: "",
@@ -48,5 +58,12 @@ export const createGameStore = (
 
     setOpponentConnected: (connected: boolean) =>
       set({ opponentConnected: connected }),
+
+    // Player data actions
+    setCurrentPlayerData: (data: User | null) =>
+      set({ currentPlayerData: data }),
+
+    setOpponentData: (data: User | null) =>
+      set({ opponentData: data }),
   }))
 }

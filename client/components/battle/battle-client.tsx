@@ -11,9 +11,8 @@ import { GameData, JoinGameResponse } from "@/lib/validations/game"
 import { PreGameContent } from "@/components/battle/pre-game-content"
 import DuplicateChallenger from "./duplicate-challenger"
 import { Session } from "@/lib/auth-client"
-import { GameStoreProvider } from "@/providers/game-store-provider"
 import { useGameStore } from "@/providers/game-store-provider"
-import { useGame } from "@/hooks/use-game"
+import { useGame } from "@/context/game-websocket-context"
 
 const initialCode = `function twoSum(nums, target) {
   // Your solution here
@@ -25,20 +24,15 @@ interface BattleClientContentProps {
   user: Session["user"] | null
 }
 
-// Inner component that uses the game store
-function BattleClientInner({ gameData, joinResult, user }: BattleClientContentProps) {
+export function BattleClientContent({ gameData, joinResult }: BattleClientContentProps) {
   const [problemSidebarCollapsed, setProblemSidebarCollapsed] = useState(false)
   const [consoleCollapsed, setConsoleCollapsed] = useState(false)
   const [opponentEditorCollapsed, setOpponentEditorCollapsed] = useState(false)
 
-  const gameStatus = useGameStore((state) => state.gameStatus)
+  const gameStatus = useGameStore((state) => state.gameStatus);
 
-  // Initialize WebSocket connection and get emit functions
-  const gameActions = useGame({
-    gameId: gameData._id,
-    userRole: joinResult.role,
-    user: user,
-  })
+  // Get WebSocket emit functions from context
+  const gameActions = useGame()
 
   const showDuplicateModal = joinResult.success === false && joinResult.role === 'spectator' && joinResult.message.includes('already joined as challenger')
 
@@ -47,9 +41,9 @@ function BattleClientInner({ gameData, joinResult, user }: BattleClientContentPr
       <div className="h-screen flex flex-col bg-background overflow-hidden">
         <DuplicateChallenger display={showDuplicateModal} />
         <BattleNavbar
-          onRunCode={gameActions.emitRunCode}
-          onSubmitCode={gameActions.emitSubmitCode}
-          onForfeit={gameActions.emitForfeit}
+          onRunCode={gameActions.sendRunCode}
+          onSubmitCode={gameActions.sendSubmitCode}
+          onForfeit={joinResult.role === "challenger" ? gameActions.forfeitAsChallenger : gameActions.forfeitAsHost}
         />
         <div className="flex-1 flex min-h-0">
           <PanelGroup direction="horizontal">
@@ -67,7 +61,7 @@ function BattleClientInner({ gameData, joinResult, user }: BattleClientContentPr
                       <CurrentPlayerPanel
                         collapsed={opponentEditorCollapsed}
                         initialCode={gameData.problem?.functionSignature || initialCode}
-                        onCodeUpdate={gameActions.emitCodeUpdate}
+                        onCodeUpdate={gameActions.sendCodeUpdate}
                       />
                       <OpponentPanel
                         collapsed={opponentEditorCollapsed}
@@ -88,18 +82,5 @@ function BattleClientInner({ gameData, joinResult, user }: BattleClientContentPr
         </div>
       </div>
     </>
-  )
-}
-
-// Main export component that wraps with the store provider
-export function BattleClientContent({ gameData, joinResult, user }: BattleClientContentProps) {
-  return (
-    <GameStoreProvider
-      gameData={gameData}
-      userRole={joinResult.role}
-      user={user}
-    >
-      <BattleClientInner gameData={gameData} joinResult={joinResult} user={user} />
-    </GameStoreProvider>
   )
 }

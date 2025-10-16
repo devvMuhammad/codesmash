@@ -3,7 +3,8 @@ import { getGameById, joinGame } from "@/lib/api/game"
 import { BattleClientContent } from "@/components/battle/battle-client"
 import type { JoinGameResponse } from "@/lib/validations/game"
 import { getSessionServerSide } from "@/lib/api/user"
-import { WebSocketProvider } from "@/context/websocket-context"
+import { GameWebSocketProvider } from "@/context/game-websocket-context"
+import { GameStoreProvider } from "@/providers/game-store-provider"
 
 interface DuelPageProps {
   params: Promise<{
@@ -58,7 +59,19 @@ export default async function DuelPage({ params, searchParams }: DuelPageProps) 
 
   console.log(joinResult?.role !== "host" ? joinResult : "host joined the game")
 
-  return <WebSocketProvider>
-    <BattleClientContent gameData={gameData} joinResult={joinResult} user={session.user} />
-  </WebSocketProvider>
+  return (
+    <GameStoreProvider
+      gameData={gameData}
+      userRole={joinResult.role}
+      user={session.user}
+    >
+      <GameWebSocketProvider
+        gameId={gameId}
+        userRole={joinResult.role}
+        user={session.user}
+      >
+        <BattleClientContent gameData={gameData} joinResult={joinResult} user={session.user} />
+      </GameWebSocketProvider>
+    </GameStoreProvider>
+  )
 }

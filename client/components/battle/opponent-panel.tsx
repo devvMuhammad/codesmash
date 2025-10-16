@@ -13,6 +13,8 @@ interface OpponentPanelProps {
 export function OpponentPanel({ collapsed, onCollapse }: OpponentPanelProps) {
   const [simulatedCode, setSimulatedCode] = useState(`function twoSum(nums, target) {
     // Opponent is typing...
+
+    this is the best in thr worls
     
 }`)
 
@@ -63,7 +65,7 @@ export function OpponentPanel({ collapsed, onCollapse }: OpponentPanelProps) {
             <textarea
               value={simulatedCode}
               readOnly
-              className="w-full h-full p-4 bg-background font-mono text-sm resize-none border-none outline-none filter"
+              className="w-full h-full p-4 bg-background font-mono text-sm resize-none border-none outline-none filter blur-xs"
               style={{
                 fontFamily: 'Monaco, "Lucida Console", monospace',
                 lineHeight: '1.5',

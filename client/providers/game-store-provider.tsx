@@ -9,7 +9,7 @@ import {
   type GameState,
   defaultInitState,
 } from '@/lib/stores/game-store'
-import { GameData, PlayerRolesType } from '@/lib/validations/game'
+import { GameData, PlayerRolesType, User } from '@/lib/validations/game'
 import { Session } from '@/lib/auth-client'
 
 export type GameStoreApi = ReturnType<typeof createGameStore>
@@ -20,9 +20,9 @@ export const GameStoreContext = createContext<GameStoreApi | undefined>(
 
 export interface GameStoreProviderProps {
   children: ReactNode
-  gameData?: GameData
-  userRole?: PlayerRolesType
-  user?: Session["user"] | null
+  gameData: GameData
+  userRole: PlayerRolesType
+  user: Session["user"] | null
 }
 
 export const GameStoreProvider = ({
@@ -39,9 +39,22 @@ export const GameStoreProvider = ({
   // Your solution here
 }`
 
-    const initState: GameState = gameData && userRole ? {
+    // Extract current player and opponent data
+    const currentPlayerData: User | null = user ? {
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+      image: user.image || undefined,
+    } : null
+
+    const opponentData: User | null =
+      userRole === "host" ? gameData.challenger || null : gameData.host || null
+
+    const initState: GameState = {
       ...defaultInitState,
       userRole,
+      currentPlayerData,
+      opponentData,
       gameStatus: gameData.status,
       timeRemaining: gameData.timeLimit * 60, // Convert minutes to seconds
       currentPlayerCode: userRole === "host"
@@ -52,7 +65,7 @@ export const GameStoreProvider = ({
         : gameData.hostCode || initialCode,
       isConnected: userRole === "host" ? gameData.hostJoined : gameData.challengerJoined,
       opponentConnected: userRole === "host" ? gameData.challengerJoined : gameData.hostJoined,
-    } : defaultInitState
+    }
 
     storeRef.current = createGameStore(initState)
   }
