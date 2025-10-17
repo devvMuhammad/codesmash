@@ -30,17 +30,17 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
 
   const currentUserId = session?.user?.id
   const isHost = currentUserId === gameData.hostId
+  const isChallenger = currentUserId === gameData.challengerId
+
   const userRole = joinResult?.role || (currentUserId === gameData.hostId ? 'host' : 'spectator')
-  const hasChallenger = !!gameData.challengerId
 
   // connections
   const isHostJoined = userRole === 'host' ? isConnected : opponentConnected
   const isChallengerJoined = userRole === 'challenger' ? isConnected : opponentConnected
 
   // condition variables
-  const bothPlayersJoined = hasChallenger && isHostJoined && isChallengerJoined
+  const bothPlayersJoined = isHostJoined && isChallengerJoined
   const canHostStartGame = currentUserId === gameData.hostId && bothPlayersJoined
-  const shouldShowWaitingForHost = currentUserId === gameData.challengerId
 
   const inviteLink = generateInviteLink(gameData.inviteCode, gameData._id)
 
@@ -73,7 +73,7 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
 
           <CardContent>
             {/* Status Message for Challenger - moved above players grid */}
-            {shouldShowWaitingForHost && (
+            {isChallenger && (
               <div className="text-center mb-6">
                 <Badge variant="secondary">
                   {bothPlayersJoined ? 'Waiting for host to start' : 'Waiting for all players to join'}
@@ -129,7 +129,7 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
                     <AvatarFallback className="text-lg font-semibold">
                       {userRole === "challenger"
                         ? getUserInitials(currentPlayerData?.name)
-                        : (hasChallenger ? getUserInitials(opponentData?.name) : "?")}
+                        : (getUserInitials(opponentData?.name) || "?")}
                     </AvatarFallback>
                   </Avatar>
                   <div>
@@ -161,7 +161,7 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
             )}
 
             {/* Leave Game Button for Challenger */}
-            {shouldShowWaitingForHost && (
+            {isChallenger && (
               <div className="flex justify-center mt-6">
                 <Button
                   variant="destructive"

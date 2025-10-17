@@ -11,7 +11,7 @@ interface OpponentPanelProps {
 }
 
 export function OpponentPanel({ collapsed, onCollapse }: OpponentPanelProps) {
-  const [simulatedCode, setSimulatedCode] = useState(`function twoSum(nums, target) {
+  const [simulatedCode,] = useState(`function twoSum(nums, target) {
     // Opponent is typing...
 
     this is the best in thr worls
