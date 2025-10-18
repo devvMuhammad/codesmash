@@ -17,6 +17,8 @@ interface GameWebSocketContextType {
   forfeitAsChallenger: () => void
   forfeitAsHost: () => void
   challengerQuit: () => void
+  startBattle: () => void
+  markChallengerReady: () => void
 
   // Raw socket
   socket: Socket | null
@@ -44,6 +46,7 @@ export function GameWebSocketProvider({
   const setConnected = useGameStore((state) => state.setConnected)
   const setOpponentConnected = useGameStore((state) => state.setOpponentConnected)
   const setOpponentData = useGameStore((state) => state.setOpponentData)
+  const setGameStatus = useGameStore((state) => state.setGameStatus)
 
   // Socket connection initialization
   useEffect(() => {
@@ -119,11 +122,37 @@ export function GameWebSocketProvider({
       })
     })
 
+    socket.on("battle_started", (data: { user: Session['user'] }) => {
+      console.log("Battle started:", data)
+
+      // Update game status to ready_to_start
+      setGameStatus("ready_to_start")
+
+      if (userRole === "challenger") {
+        toast.success(`${data.user.name} has started the battle!`, {
+          description: "Mark yourself as ready when you're prepared to begin.",
+          duration: 4000,
+        })
+      }
+    })
+
+    socket.on("game_in_progress", (data: { user: Session['user'] }) => {
+      console.log("Game in progress:", data.user.name)
+
+      // Update game status to in_progress
+      setGameStatus("in_progress")
+
+      toast.success("Battle has begun!", {
+        description: "Good luck! May the best coder win.",
+        duration: 3000,
+      })
+    })
+
     // Cleanup on unmount
     return () => {
       socket.disconnect()
     }
-  }, [gameId, userRole, user, setConnected, setOpponentConnected, setOpponentData])
+  }, [gameId, userRole, user, setConnected, setOpponentConnected, setOpponentData, setGameStatus])
 
   // Named emit functions
   const sendCodeUpdate = useCallback((code: string) => {
@@ -158,6 +187,18 @@ export function GameWebSocketProvider({
     }
   }, [userRole, router])
 
+  const startBattle = useCallback(() => {
+    if (userRole === "host") {
+      socketRef.current?.emit("start_battle")
+    }
+  }, [userRole])
+
+  const markChallengerReady = useCallback(() => {
+    if (userRole === "challenger") {
+      socketRef.current?.emit("challenger_ready")
+    }
+  }, [userRole])
+
   const contextValue: GameWebSocketContextType = {
     sendCodeUpdate,
     sendRunCode,
@@ -165,6 +206,8 @@ export function GameWebSocketProvider({
     forfeitAsChallenger,
     forfeitAsHost,
     challengerQuit,
+    startBattle,
+    markChallengerReady,
     socket: socketRef.current,
   }
 

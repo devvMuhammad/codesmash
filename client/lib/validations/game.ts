@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 export const difficultySchema = z.enum(["easy", "medium", "hard"])
-export const gameStatusSchema = z.enum(["waiting", "in_progress", "completed", "cancelled"])
+export const gameStatusSchema = z.enum(["waiting", "ready_to_start", "in_progress", "completed", "cancelled"])
 
 export const createGameSchema = z.object({
   difficulty: difficultySchema,

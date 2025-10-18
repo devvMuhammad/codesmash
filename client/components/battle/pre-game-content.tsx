@@ -20,13 +20,14 @@ interface PreGameContentProps {
 
 export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
   const { data: session } = useSession()
-  const { challengerQuit } = useGame()
+  const { challengerQuit, startBattle, markChallengerReady } = useGame()
 
   // Listen to connection states and player data from Zustand store
   const isConnected = useGameStore((state) => state.isConnected)
   const opponentConnected = useGameStore((state) => state.opponentConnected)
   const currentPlayerData = useGameStore((state) => state.currentPlayerData)
   const opponentData = useGameStore((state) => state.opponentData)
+  const gameStatus = useGameStore((state) => state.gameStatus)
 
   const currentUserId = session?.user?.id
   const isHost = currentUserId === gameData.hostId
@@ -40,7 +41,8 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
 
   // condition variables
   const bothPlayersJoined = isHostJoined && isChallengerJoined
-  const canHostStartGame = currentUserId === gameData.hostId && bothPlayersJoined
+  const canHostStartGame = currentUserId === gameData.hostId && bothPlayersJoined && gameStatus === 'waiting'
+  const canChallengerMarkReady = currentUserId === gameData.challengerId && gameStatus === 'ready_to_start'
 
   const inviteLink = generateInviteLink(gameData.inviteCode, gameData._id)
 
@@ -72,11 +74,24 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
           </CardHeader>
 
           <CardContent>
-            {/* Status Message for Challenger - moved above players grid */}
+            {/* Status Messages */}
             {isChallenger && (
               <div className="text-center mb-6">
                 <Badge variant="secondary">
-                  {bothPlayersJoined ? 'Waiting for host to start' : 'Waiting for all players to join'}
+                  {gameStatus === 'waiting'
+                    ? (bothPlayersJoined ? 'Waiting for host to start' : 'Waiting for all players to join')
+                    : gameStatus === 'ready_to_start'
+                    ? 'Host has started the battle - Mark yourself as ready!'
+                    : 'Game in progress'
+                  }
+                </Badge>
+              </div>
+            )}
+
+            {isHost && gameStatus === 'ready_to_start' && (
+              <div className="text-center mb-6">
+                <Badge variant="secondary">
+                  Waiting for challenger to get ready...
                 </Badge>
               </div>
             )}
@@ -153,9 +168,19 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
             {/* Start Button for Host when both players have joined */}
             {canHostStartGame && (
               <div className="flex justify-center mt-8">
-                <Button size="lg" className="px-8">
+                <Button size="lg" className="px-8" onClick={startBattle}>
                   <Trophy className="h-4 w-4 mr-2" />
                   Start Battle
+                </Button>
+              </div>
+            )}
+
+            {/* Ready Button for Challenger when host has started */}
+            {canChallengerMarkReady && (
+              <div className="flex justify-center mt-8">
+                <Button size="lg" className="px-8" onClick={markChallengerReady}>
+                  <Trophy className="h-4 w-4 mr-2" />
+                  Mark Yourself as Ready
                 </Button>
               </div>
             )}

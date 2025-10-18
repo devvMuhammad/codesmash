@@ -54,7 +54,7 @@ export function BattleClientContent({ gameData, joinResult }: BattleClientConten
             <Panel>
               <PanelGroup direction="vertical">
                 <Panel defaultSize={consoleCollapsed ? 100 : 70}>
-                  {gameStatus === 'waiting' ? (
+                  {gameStatus === 'waiting' || gameStatus === 'ready_to_start' ? (
                     <PreGameContent gameData={gameData} joinResult={joinResult} />
                   ) : (
                     <PanelGroup direction="horizontal">
@@ -70,7 +70,7 @@ export function BattleClientContent({ gameData, joinResult }: BattleClientConten
                     </PanelGroup>
                   )}
                 </Panel>
-                {gameStatus !== 'waiting' && (
+                {gameStatus !== 'waiting' && gameStatus !== 'ready_to_start' && (
                   <ConsolePanel
                     collapsed={consoleCollapsed}
                     onCollapse={setConsoleCollapsed}
