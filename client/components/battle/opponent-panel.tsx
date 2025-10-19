@@ -3,7 +3,7 @@
 import { Panel, PanelResizeHandle } from "react-resizable-panels"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { useState } from "react"
+import { useGameStore } from "@/providers/game-store-provider"
 
 interface OpponentPanelProps {
   collapsed: boolean
@@ -11,14 +11,9 @@ interface OpponentPanelProps {
 }
 
 export function OpponentPanel({ collapsed, onCollapse }: OpponentPanelProps) {
-  const [simulatedCode,] = useState(`function twoSum(nums, target) {
-    // Opponent is typing...
 
-    this is the best in thr worls
-    
-}`)
-
-
+  const isConnected = useGameStore((state) => state.opponentConnected)
+  const opponentCode = useGameStore((state) => state.opponentCode)
 
   if (collapsed) {
     return (
@@ -48,8 +43,10 @@ export function OpponentPanel({ collapsed, onCollapse }: OpponentPanelProps) {
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-muted-foreground">Opponent</span>
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-xs text-green-400">Connected</span>
+                <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className={`text-xs ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
+                  {isConnected ? 'Connected' : 'Disconnected'}
+                </span>
               </div>
             </div>
             <Button
@@ -63,7 +60,7 @@ export function OpponentPanel({ collapsed, onCollapse }: OpponentPanelProps) {
           </div>
           <div className="flex-1 min-h-0 relative">
             <textarea
-              value={simulatedCode}
+              value={opponentCode}
               readOnly
               className="w-full h-full p-4 bg-background font-mono text-sm resize-none border-none outline-none filter blur-xs"
               style={{

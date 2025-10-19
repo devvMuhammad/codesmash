@@ -31,6 +31,10 @@ export interface GameActions {
   setCurrentPlayerData: (data: User | null) => void
   setOpponentData: (data: User | null) => void
 
+  // Code actions
+  setCurrentPlayerCode: (code: string) => void
+  setOpponentCode: (code: string) => void
+
   // Game state actions
   setGameStatus: (status: "waiting" | "ready_to_start" | "in_progress" | "completed" | "cancelled") => void
 }
@@ -68,6 +72,13 @@ export const createGameStore = (
 
     setOpponentData: (data: User | null) =>
       set({ opponentData: data }),
+
+    // Code actions
+    setCurrentPlayerCode: (code: string) =>
+      set({ currentPlayerCode: code }),
+
+    setOpponentCode: (code: string) =>
+      set({ opponentCode: code }),
 
     // Game state actions
     setGameStatus: (status: "waiting" | "ready_to_start" | "in_progress" | "completed" | "cancelled") =>

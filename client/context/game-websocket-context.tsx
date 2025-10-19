@@ -47,6 +47,7 @@ export function GameWebSocketProvider({
   const setOpponentConnected = useGameStore((state) => state.setOpponentConnected)
   const setOpponentData = useGameStore((state) => state.setOpponentData)
   const setGameStatus = useGameStore((state) => state.setGameStatus)
+  const setOpponentCode = useGameStore((state) => state.setOpponentCode)
 
   // Socket connection initialization
   useEffect(() => {
@@ -148,11 +149,21 @@ export function GameWebSocketProvider({
       })
     })
 
+    // Code synchronization events
+    socket.on("opponent_code_update", (data: { code: string, role: PlayerRolesType }) => {
+      console.log("Opponent code update:", data.role)
+
+      // Only update if it's not from the current user
+      if (data.role !== userRole) {
+        setOpponentCode(data.code)
+      }
+    })
+
     // Cleanup on unmount
     return () => {
       socket.disconnect()
     }
-  }, [gameId, userRole, user, setConnected, setOpponentConnected, setOpponentData, setGameStatus])
+  }, [gameId, userRole, user, setConnected, setOpponentConnected, setOpponentData, setGameStatus, setOpponentCode])
 
   // Named emit functions
   const sendCodeUpdate = useCallback((code: string) => {

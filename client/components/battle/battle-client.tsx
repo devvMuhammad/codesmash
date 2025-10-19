@@ -34,6 +34,11 @@ export function BattleClientContent({ gameData, joinResult }: BattleClientConten
   // Get WebSocket emit functions from context
   const gameActions = useGame()
 
+  // Determine initial code based on user role
+  const userInitialCode = joinResult.role === "host"
+    ? (gameData.hostCode || gameData.problem?.functionSignature || initialCode)
+    : (gameData.challengerCode || gameData.problem?.functionSignature || initialCode)
+
   const showDuplicateModal = joinResult.success === false && joinResult.role === 'spectator' && joinResult.message.includes('already joined as challenger')
 
   return (
@@ -60,8 +65,8 @@ export function BattleClientContent({ gameData, joinResult }: BattleClientConten
                     <PanelGroup direction="horizontal">
                       <CurrentPlayerPanel
                         collapsed={opponentEditorCollapsed}
-                        initialCode={gameData.problem?.functionSignature || initialCode}
-                        onCodeUpdate={gameActions.sendCodeUpdate}
+                        gameId={gameData._id}
+                        initialCode={userInitialCode}
                       />
                       <OpponentPanel
                         collapsed={opponentEditorCollapsed}

@@ -27,6 +27,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.12",
     "geist": "^1.4.2",
+    "lodash.throttle": "^4.1.1",
     "lucide-react": "^0.542.0",
     "monaco-editor": "^0.52.2",
     "next": "15.5.2",
@@ -47,6 +48,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/lodash.throttle": "^4.1.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
