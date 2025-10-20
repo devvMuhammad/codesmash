@@ -22,7 +22,7 @@ export function CurrentPlayerPanel({ collapsed, gameId, initialCode }: CurrentPl
 
   return (
     <Panel defaultSize={collapsed ? 100 : 50} minSize={30}>
-      <div className="h-full flex flex-col">c
+      <div className="h-full flex flex-col">
         <div className="h-10 border-b border-border/40 flex items-center justify-between px-3 bg-muted/20">
           <div className="flex items-center gap-2">
             <span className="text-sm font-medium text-muted-foreground">You</span>

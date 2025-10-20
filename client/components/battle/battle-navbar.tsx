@@ -6,6 +6,7 @@ import { Timer, Settings, Flag, Play, Send } from "lucide-react"
 import Link from "next/link"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { UserDropdown } from "../user-dropdown"
+import { InviteDropdown } from "./invite-dropdown"
 import { formatTime } from "@/lib/date-utils"
 import { useSession } from "@/lib/auth-client"
 import { useGameStore } from "@/providers/game-store-provider"
@@ -15,9 +16,11 @@ interface BattleNavbarProps {
   onRunCode?: (code: string) => void
   onSubmitCode?: (code: string) => void
   onForfeit?: () => void
+  gameId?: string
+  inviteCode?: string
 }
 
-export function BattleNavbar({ onRunCode, onSubmitCode, onForfeit }: BattleNavbarProps) {
+export function BattleNavbar({ onRunCode, onSubmitCode, onForfeit, gameId, inviteCode }: BattleNavbarProps) {
   const { data: session, isPending: isLoading } = useSession()
 
   const {
@@ -81,6 +84,12 @@ export function BattleNavbar({ onRunCode, onSubmitCode, onForfeit }: BattleNavba
       </div>
 
       <div className="flex items-center gap-2">
+        {gameId && inviteCode && (
+          <InviteDropdown
+            gameId={gameId}
+            inviteCode={inviteCode}
+          />
+        )}
         <Button
           variant="outline"
           size="sm"
