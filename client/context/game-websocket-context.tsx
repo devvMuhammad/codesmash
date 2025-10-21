@@ -16,6 +16,7 @@ interface GameWebSocketContextType {
   sendSubmitCode: (code: string) => void
   forfeitAsChallenger: () => void
   forfeitAsHost: () => void
+  forfeitGame: () => void
   challengerQuit: () => void
   startBattle: () => void
   markChallengerReady: () => void
@@ -48,6 +49,7 @@ export function GameWebSocketProvider({
   const setOpponentData = useGameStore((state) => state.setOpponentData)
   const setGameStatus = useGameStore((state) => state.setGameStatus)
   const setOpponentCode = useGameStore((state) => state.setOpponentCode)
+  const setGameResult = useGameStore((state) => state.setGameResult)
 
   // Socket connection initialization
   useEffect(() => {
@@ -159,11 +161,28 @@ export function GameWebSocketProvider({
       }
     })
 
+    // Game end events
+    socket.on("game_finished", (data: { result: { reason: "completed" | "forfeit" | "time_up", winner: string, message: string }, gameStatus: string }) => {
+      console.log("Game finished:", data)
+
+      // Update game status to completed
+      setGameStatus("completed")
+
+      // Store the game result
+      setGameResult(data.result)
+
+      // Show result notification
+      toast.info("Game Finished", {
+        description: data.result.message,
+        duration: 5000,
+      })
+    })
+
     // Cleanup on unmount
     return () => {
       socket.disconnect()
     }
-  }, [gameId, userRole, user, setConnected, setOpponentConnected, setOpponentData, setGameStatus, setOpponentCode])
+  }, [gameId, userRole, user, setConnected, setOpponentConnected, setOpponentData, setGameStatus, setOpponentCode, setGameResult])
 
   // Named emit functions
   const sendCodeUpdate = useCallback((code: string) => {
@@ -187,6 +206,12 @@ export function GameWebSocketProvider({
   const forfeitAsHost = useCallback(() => {
     if (userRole === "host") {
       socketRef.current?.emit("quit")
+    }
+  }, [userRole])
+
+  const forfeitGame = useCallback(() => {
+    if (userRole === "host" || userRole === "challenger") {
+      socketRef.current?.emit("forfeit_game")
     }
   }, [userRole])
 
@@ -216,6 +241,7 @@ export function GameWebSocketProvider({
     sendSubmitCode,
     forfeitAsChallenger,
     forfeitAsHost,
+    forfeitGame,
     challengerQuit,
     startBattle,
     markChallengerReady,

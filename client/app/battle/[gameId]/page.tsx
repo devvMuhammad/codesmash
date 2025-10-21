@@ -57,7 +57,7 @@ export default async function DuelPage({ params, searchParams }: DuelPageProps) 
     notFound()
   }
 
-  console.log(joinResult?.role !== "host" ? joinResult : "host joined the game")
+  // console.log(joinResult?.role !== "host" ? joinResult : "host joined the game")
 
   return (
     <GameStoreProvider

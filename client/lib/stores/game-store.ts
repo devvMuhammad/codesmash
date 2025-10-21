@@ -1,6 +1,12 @@
 import { createStore } from 'zustand/vanilla'
 import { PlayerRolesType, User } from '@/lib/validations/game'
 
+export interface GameResult {
+  reason: 'forfeit' | 'time_up' | 'completed'
+  winner: string
+  message: string
+}
+
 export interface GameState {
   // Core game data
   userRole: PlayerRolesType | null
@@ -12,6 +18,7 @@ export interface GameState {
   // Game state
   timeRemaining: number
   gameStatus: "waiting" | "ready_to_start" | "in_progress" | "completed" | "cancelled"
+  gameResult: GameResult | null
 
   // Code state
   currentPlayerCode: string
@@ -37,6 +44,7 @@ export interface GameActions {
 
   // Game state actions
   setGameStatus: (status: "waiting" | "ready_to_start" | "in_progress" | "completed" | "cancelled") => void
+  setGameResult: (result: GameResult | null) => void
 }
 
 export type GameStore = GameState & GameActions
@@ -47,6 +55,7 @@ export const defaultInitState: GameState = {
   opponentData: null,
   timeRemaining: 0,
   gameStatus: "waiting",
+  gameResult: null,
   currentPlayerCode: "",
   opponentCode: "",
   isConnected: false,
@@ -83,5 +92,8 @@ export const createGameStore = (
     // Game state actions
     setGameStatus: (status: "waiting" | "ready_to_start" | "in_progress" | "completed" | "cancelled") =>
       set({ gameStatus: status }),
+
+    setGameResult: (result: GameResult | null) =>
+      set({ gameResult: result }),
   }))
 }

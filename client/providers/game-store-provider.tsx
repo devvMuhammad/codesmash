@@ -65,6 +65,7 @@ export const GameStoreProvider = ({
         : gameData.hostCode || initialCode,
       isConnected: userRole === "host" ? gameData.hostJoined : gameData.challengerJoined,
       opponentConnected: userRole === "host" ? gameData.challengerJoined : gameData.hostJoined,
+      gameResult: gameData.result || null,
     }
 
     storeRef.current = createGameStore(initState)

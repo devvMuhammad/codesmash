@@ -28,6 +28,14 @@ export const userSchema = z.object({
 
 export type User = z.infer<typeof userSchema>
 
+export const gameResultSchema = z.object({
+  reason: z.enum(["forfeit", "time_up", "completed"]),
+  winner: z.string(),
+  message: z.string(),
+})
+
+export type GameResult = z.infer<typeof gameResultSchema>
+
 export const playerSchema = z.object({
   id: z.string(),
   username: z.string(),
@@ -68,6 +76,7 @@ export const gameDataSchema = z.object({
   challengerJoined: z.boolean(),
   hostCode: z.string(),
   challengerCode: z.string(),
+  result: gameResultSchema.optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
   // Populated user data from MongoDB

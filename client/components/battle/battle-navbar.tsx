@@ -2,25 +2,23 @@
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Timer, Settings, Flag, Play, Send } from "lucide-react"
+import { Timer, Settings, Play, Send } from "lucide-react"
 import Link from "next/link"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { UserDropdown } from "../user-dropdown"
 import { InviteDropdown } from "./invite-dropdown"
+import { ForfeitGameDialog } from "./forfeit-game-dialog"
 import { formatTime } from "@/lib/date-utils"
 import { useSession } from "@/lib/auth-client"
 import { useGameStore } from "@/providers/game-store-provider"
 import { useShallow } from 'zustand/react/shallow'
 
 interface BattleNavbarProps {
-  onRunCode?: (code: string) => void
-  onSubmitCode?: (code: string) => void
-  onForfeit?: () => void
   gameId?: string
   inviteCode?: string
 }
 
-export function BattleNavbar({ onRunCode, onSubmitCode, onForfeit, gameId, inviteCode }: BattleNavbarProps) {
+export function BattleNavbar({ gameId, inviteCode }: BattleNavbarProps) {
   const { data: session, isPending: isLoading } = useSession()
 
   const {
@@ -39,22 +37,9 @@ export function BattleNavbar({ onRunCode, onSubmitCode, onForfeit, gameId, invit
     }))
   )
 
-  const handleRunCode = () => {
-    if (onRunCode) {
-      onRunCode(currentPlayerCode)
-    }
-  }
-
   const handleSubmit = () => {
-    if (onSubmitCode) {
-      onSubmitCode(currentPlayerCode)
-    }
-  }
-
-  const handleForfeit = () => {
-    if (onForfeit) {
-      onForfeit()
-    }
+    // Submit functionality would be handled through WebSocket context
+    console.log("Submit code:", currentPlayerCode)
   }
 
 
@@ -93,16 +78,6 @@ export function BattleNavbar({ onRunCode, onSubmitCode, onForfeit, gameId, invit
         <Button
           variant="outline"
           size="sm"
-          className="bg-blue-600/10 text-blue-400 border-blue-600/20 hover:bg-blue-600/20"
-          onClick={handleRunCode}
-          disabled={gameStatus !== "in_progress"}
-        >
-          <Play className="h-4 w-4 mr-2" />
-          Run Code
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
           className="bg-green-600/10 text-green-400 border-green-600/20 hover:bg-green-600/20"
           onClick={handleSubmit}
           disabled={gameStatus !== "in_progress"}
@@ -114,15 +89,9 @@ export function BattleNavbar({ onRunCode, onSubmitCode, onForfeit, gameId, invit
         <Button variant="ghost" size="sm">
           <Settings className="h-4 w-4" />
         </Button>
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={handleForfeit}
+        <ForfeitGameDialog
           disabled={gameStatus !== "in_progress"}
-        >
-          <Flag className="h-4 w-4 mr-2" />
-          Forfeit
-        </Button>
+        />
         {isLoading ? (
           <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
         ) : session?.user ? (
