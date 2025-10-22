@@ -49,7 +49,7 @@ export function BattleClientContent({ gameData, joinResult, user }: BattleClient
             gameId={gameData._id}
             inviteCode={gameData.inviteCode}
           />
-          <GameResultPanel user={user} />
+          <GameResultPanel user={user} gameData={gameData} />
         </div>
       </>
     )

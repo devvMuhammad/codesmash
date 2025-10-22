@@ -28,8 +28,10 @@ export const userSchema = z.object({
 
 export type User = z.infer<typeof userSchema>
 
+const gameResultReasons = ["forfeit", "time_up", "completed"] as const
+
 export const gameResultSchema = z.object({
-  reason: z.enum(["forfeit", "time_up", "completed"]),
+  reason: z.enum(gameResultReasons),
   winner: z.string(),
   message: z.string(),
 })

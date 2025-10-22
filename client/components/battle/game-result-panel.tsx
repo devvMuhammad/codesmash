@@ -6,15 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useGameStore } from "@/providers/game-store-provider"
 import { Session } from "@/lib/auth-client"
+import { GameData } from "@/lib/validations/game"
 import Link from "next/link"
 
 interface GameResultPanelProps {
   user: Session["user"] | null
+  gameData: GameData
 }
 
-export function GameResultPanel({ user }: GameResultPanelProps) {
+export function GameResultPanel({ user, gameData }: GameResultPanelProps) {
   const gameResult = useGameStore((state) => state.gameResult)
-  const opponentData = useGameStore((state) => state.opponentData)
   const userRole = useGameStore((state) => state.userRole)
 
   if (!gameResult) {
@@ -31,10 +32,23 @@ export function GameResultPanel({ user }: GameResultPanelProps) {
     )
   }
 
+  // Get host and challenger data from gameData
+  const hostData = gameData.host
+  const challengerData = gameData.challenger
+
   // Determine if current user won
   const currentUserId = user?.id
   const isWinner = gameResult.winner === currentUserId
   const isDraw = !gameResult.winner
+
+  // Determine who won based on winner ID
+  const hostWon = gameResult.winner === hostData?._id
+  const challengerWon = gameResult.winner === challengerData?._id
+
+  // Check if current user is a participant
+  const isHost = currentUserId === hostData?._id
+  const isChallenger = currentUserId === challengerData?._id
+  const isParticipant = isHost || isChallenger
 
   // Get result icon and color based on reason
   const getResultIcon = () => {
@@ -58,6 +72,7 @@ export function GameResultPanel({ user }: GameResultPanelProps) {
 
   const getResultTitle = () => {
     if (isDraw) return "Game Draw"
+    if (!isParticipant) return "Game Result"
     if (isWinner) return "Victory!"
     return "Defeat"
   }
@@ -89,47 +104,47 @@ export function GameResultPanel({ user }: GameResultPanelProps) {
             <p className="text-lg text-muted-foreground">{gameResult.message}</p>
           </div>
 
-          {/* Player Summary */}
+          {/* Player Summary - Host vs Challenger */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Current Player */}
-            <div className={`p-4 rounded-lg border ${isWinner && !isDraw ? 'border-green-500 bg-green-500/10' : 'border-border'}`}>
+            {/* Host (Left Side) */}
+            <div className={`p-4 rounded-lg border ${hostWon && !isDraw ? 'border-green-500 bg-green-500/10' : 'border-border'}`}>
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-                  {user?.image ? (
-                    <img src={user.image} alt={user.name || "You"} className="h-10 w-10 rounded-full" />
+                  {hostData?.image ? (
+                    <img src={hostData.image} alt={hostData.name || "Host"} className="h-10 w-10 rounded-full" />
                   ) : (
                     <User className="h-5 w-5" />
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold">{user?.name || "You"}</p>
-                  <p className="text-sm text-muted-foreground capitalize">
-                    {userRole === 'host' ? 'Host' : 'Challenger'}
+                  <p className="font-semibold">{hostData?.name || "Host"}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Host
                   </p>
                 </div>
-                {isWinner && !isDraw && (
+                {hostWon && !isDraw && (
                   <Trophy className="h-5 w-5 text-green-400" />
                 )}
               </div>
             </div>
 
-            {/* Opponent */}
-            <div className={`p-4 rounded-lg border ${!isWinner && !isDraw ? 'border-green-500 bg-green-500/10' : 'border-border'}`}>
+            {/* Challenger (Right Side) */}
+            <div className={`p-4 rounded-lg border ${challengerWon && !isDraw ? 'border-green-500 bg-green-500/10' : 'border-border'}`}>
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
-                  {opponentData?.image ? (
-                    <img src={opponentData.image} alt={opponentData.name || "Opponent"} className="h-10 w-10 rounded-full" />
+                  {challengerData?.image ? (
+                    <img src={challengerData.image} alt={challengerData.name || "Challenger"} className="h-10 w-10 rounded-full" />
                   ) : (
                     <User className="h-5 w-5" />
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className="font-semibold">{opponentData?.name || "Opponent"}</p>
-                  <p className="text-sm text-muted-foreground capitalize">
-                    {userRole === 'host' ? 'Challenger' : 'Host'}
+                  <p className="font-semibold">{challengerData?.name || "Challenger"}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Challenger
                   </p>
                 </div>
-                {!isWinner && !isDraw && (
+                {challengerWon && !isDraw && (
                   <Trophy className="h-5 w-5 text-green-400" />
                 )}
               </div>
