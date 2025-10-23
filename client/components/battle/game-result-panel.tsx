@@ -152,12 +152,9 @@ export function GameResultPanel({ user, gameData }: GameResultPanelProps) {
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <Button asChild className="flex-1">
+          <div className="flex flex-col items-center sm:flex-row sm:justify-center gap-3 pt-4">
+            <Button asChild>
               <Link href="/lobby">Back to Lobby</Link>
-            </Button>
-            <Button variant="outline" asChild className="flex-1">
-              <Link href="/battle">New Game</Link>
             </Button>
           </div>
         </CardContent>
