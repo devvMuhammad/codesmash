@@ -27,6 +27,7 @@ export function BattleNavbar({ gameId, inviteCode }: BattleNavbarProps) {
     currentPlayerCode,
     isConnected,
     opponentConnected,
+    opponentName
   } = useGameStore(
     useShallow((state) => ({
       timeRemaining: state.timeRemaining,
@@ -34,6 +35,7 @@ export function BattleNavbar({ gameId, inviteCode }: BattleNavbarProps) {
       currentPlayerCode: state.currentPlayerCode,
       isConnected: state.isConnected,
       opponentConnected: state.opponentConnected,
+      opponentName: state.opponentData?.name
     }))
   )
 
@@ -63,7 +65,7 @@ export function BattleNavbar({ gameId, inviteCode }: BattleNavbarProps) {
           </Badge>
           <span className="text-muted-foreground font-medium">vs</span>
           <Badge variant="outline" className={`${opponentConnected ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-400 border-red-500/20'}`}>
-            Opponent
+            {opponentName}
           </Badge>
         </div>
       </div>

@@ -56,49 +56,47 @@ export function BattleClientContent({ gameData, joinResult, user }: BattleClient
   }
 
   return (
-    <>
-      <div className="h-screen flex flex-col bg-background overflow-hidden">
-        <DuplicateChallenger display={showDuplicateModal} />
-        <BattleNavbar
-          gameId={gameData._id}
-          inviteCode={gameData.inviteCode}
-        />
-        <div className="flex-1 flex min-h-0">
-          <PanelGroup direction="horizontal">
-            <ProblemDescription
-              collapsed={problemSidebarCollapsed}
-              onCollapse={setProblemSidebarCollapsed}
-            />
-            <Panel>
-              <PanelGroup direction="vertical">
-                <Panel defaultSize={consoleCollapsed ? 100 : 70}>
-                  {gameStatus === 'waiting' || gameStatus === 'ready_to_start' ? (
-                    <PreGameContent gameData={gameData} joinResult={joinResult} />
-                  ) : (
-                    <PanelGroup direction="horizontal">
-                      <CurrentPlayerPanel
-                        collapsed={opponentEditorCollapsed}
-                        gameId={gameData._id}
-                        initialCode={userInitialCode}
-                      />
-                      <OpponentPanel
-                        collapsed={opponentEditorCollapsed}
-                        onCollapse={setOpponentEditorCollapsed}
-                      />
-                    </PanelGroup>
-                  )}
-                </Panel>
-                {gameStatus !== 'waiting' && gameStatus !== 'ready_to_start' && (
-                  <ConsolePanel
-                    collapsed={consoleCollapsed}
-                    onCollapse={setConsoleCollapsed}
-                  />
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
+      <DuplicateChallenger display={showDuplicateModal} />
+      <BattleNavbar
+        gameId={gameData._id}
+        inviteCode={gameData.inviteCode}
+      />
+      <div className="flex-1 flex min-h-0">
+        <PanelGroup direction="horizontal">
+          <ProblemDescription
+            collapsed={problemSidebarCollapsed}
+            onCollapse={setProblemSidebarCollapsed}
+          />
+          <Panel>
+            <PanelGroup direction="vertical">
+              <Panel defaultSize={consoleCollapsed ? 100 : 70}>
+                {gameStatus === 'waiting' || gameStatus === 'ready_to_start' ? (
+                  <PreGameContent gameData={gameData} joinResult={joinResult} />
+                ) : (
+                  <PanelGroup direction="horizontal">
+                    <CurrentPlayerPanel
+                      collapsed={opponentEditorCollapsed}
+                      gameId={gameData._id}
+                      initialCode={userInitialCode}
+                    />
+                    <OpponentPanel
+                      collapsed={opponentEditorCollapsed}
+                      onCollapse={setOpponentEditorCollapsed}
+                    />
+                  </PanelGroup>
                 )}
-              </PanelGroup>
-            </Panel>
-          </PanelGroup>
-        </div>
+              </Panel>
+              {gameStatus !== 'waiting' && gameStatus !== 'ready_to_start' && (
+                <ConsolePanel
+                  collapsed={consoleCollapsed}
+                  onCollapse={setConsoleCollapsed}
+                />
+              )}
+            </PanelGroup>
+          </Panel>
+        </PanelGroup>
       </div>
-    </>
+    </div>
   )
 }
