@@ -15,14 +15,12 @@ import {
 import { Button } from "@/components/ui/button"
 import { Flag } from "lucide-react"
 import { useGame } from "@/context/game-websocket-context"
+import { useGameStore } from "@/providers/game-store-provider"
 
-interface ForfeitGameDialogProps {
-  disabled?: boolean
-}
-
-export function ForfeitGameDialog({ disabled = false }: ForfeitGameDialogProps) {
+export function ForfeitGameDialog() {
   const [open, setOpen] = useState(false)
   const { forfeitGame } = useGame()
+  const gameStatus = useGameStore((state) => state.gameStatus)
 
   const handleForfeit = () => {
     forfeitGame()
@@ -35,7 +33,7 @@ export function ForfeitGameDialog({ disabled = false }: ForfeitGameDialogProps) 
         <Button
           variant="destructive"
           size="sm"
-          disabled={disabled}
+          disabled={gameStatus !== "in_progress"}
         >
           <Flag className="h-4 w-4 mr-2" />
           Forfeit

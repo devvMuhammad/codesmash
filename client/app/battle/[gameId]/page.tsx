@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import { getGameById, joinGame } from "@/lib/api/game"
 import { BattleClientContent } from "@/components/battle/battle-client"
 import type { JoinGameResponse } from "@/lib/validations/game"
@@ -30,7 +30,6 @@ export default async function DuelPage({ params, searchParams }: DuelPageProps) 
     notFound()
   }
 
-  let gameData
   let joinResult: JoinGameResponse | null = null
 
   try {
@@ -49,14 +48,7 @@ export default async function DuelPage({ params, searchParams }: DuelPageProps) 
     }
   }
 
-  // Then fetch the game data (which will include updated join status)
-  try {
-    gameData = await getGameById(gameId)
-  } catch (error) {
-    console.error("Failed to fetch game data:", error)
-    notFound()
-  }
-
+  const gameData = await getGameById(gameId)
   // console.log(joinResult?.role !== "host" ? joinResult : "host joined the game")
 
   return (

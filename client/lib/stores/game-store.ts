@@ -1,5 +1,6 @@
 import { createStore } from 'zustand/vanilla'
 import { PlayerRolesType, User } from '@/lib/validations/game'
+import { SUPPORTED_LANGUAGES } from '../config'
 
 export interface GameResult {
   reason: 'forfeit' | 'time_up' | 'completed'
@@ -24,6 +25,9 @@ export interface GameState {
   currentPlayerCode: string
   opponentCode: string
 
+  // Language
+  selectedLanguage: string;
+
   // WebSocket state
   isConnected: boolean
   opponentConnected: boolean
@@ -45,6 +49,9 @@ export interface GameActions {
   // Game state actions
   setGameStatus: (status: "waiting" | "ready_to_start" | "in_progress" | "completed" | "cancelled") => void
   setGameResult: (result: GameResult | null) => void
+
+  // Language state actions
+  setSelectedLanguage: (language: string) => void
 }
 
 export type GameStore = GameState & GameActions
@@ -60,6 +67,7 @@ export const defaultInitState: GameState = {
   opponentCode: "",
   isConnected: false,
   opponentConnected: false,
+  selectedLanguage: SUPPORTED_LANGUAGES[0].name
 }
 
 export const createGameStore = (
@@ -95,5 +103,9 @@ export const createGameStore = (
 
     setGameResult: (result: GameResult | null) =>
       set({ gameResult: result }),
+
+    // Language state actions
+    setSelectedLanguage: (language: string) =>
+      set({ selectedLanguage: language }),
   }))
 }

@@ -49,17 +49,18 @@ export const playerSchema = z.object({
 export type Player = z.infer<typeof playerSchema>
 
 export const problemSchema = z.object({
-  id: z.string(),
+  _id: z.string(),
   title: z.string(),
   description: z.string(),
   difficulty: difficultySchema,
-  examples: z.array(z.object({
-    input: z.string(),
-    output: z.string(),
-    explanation: z.string().optional(),
-  })),
-  constraints: z.array(z.string()),
-  functionSignature: z.string(),
+  initialCodes: z.object({
+    python: z.string(),
+    javascript: z.string(),
+    java: z.string(),
+    cpp: z.string(),
+  }),
+  correctOutput: z.string(),
+  testCases: z.string(),
 })
 
 export type Problem = z.infer<typeof problemSchema>
@@ -70,7 +71,6 @@ export const gameDataSchema = z.object({
   challengerId: z.string().optional(), // Keep for compatibility with frontend
   inviteCode: z.string(),
   status: gameStatusSchema,
-  problemId: z.string(),
   problem: problemSchema.optional(),
   timeLimit: z.number(),
   difficulty: difficultySchema,
