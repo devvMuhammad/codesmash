@@ -14,10 +14,6 @@ import DuplicateChallenger from "./duplicate-challenger"
 import { Session } from "@/lib/auth-client"
 import { useGameStore } from "@/providers/game-store-provider"
 
-const initialCode = `function twoSum(nums, target) {
-  // Your solution here
-}`
-
 interface BattleClientContentProps {
   gameData: GameData
   joinResult: JoinGameResponse
@@ -30,12 +26,6 @@ export function BattleClientContent({ gameData, joinResult, user }: BattleClient
   const [opponentEditorCollapsed, setOpponentEditorCollapsed] = useState(false)
 
   const gameStatus = useGameStore((state) => state.gameStatus);
-
-  // Determine initial code based on user role
-  const userInitialCode = joinResult.role === "host"
-    ? (gameData.hostCode || gameData.problem?.functionSignature || initialCode)
-    : (gameData.challengerCode || gameData.problem?.functionSignature || initialCode)
-
   const showDuplicateModal = joinResult.success === false && joinResult.role === 'spectator' && joinResult.message.includes('already joined as challenger')
 
   // Show game result panel if game is completed
@@ -78,7 +68,6 @@ export function BattleClientContent({ gameData, joinResult, user }: BattleClient
                     <CurrentPlayerPanel
                       collapsed={opponentEditorCollapsed}
                       gameId={gameData._id}
-                      initialCode={userInitialCode}
                     />
                     <OpponentPanel
                       collapsed={opponentEditorCollapsed}

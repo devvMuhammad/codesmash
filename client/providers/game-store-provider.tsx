@@ -34,11 +34,6 @@ export const GameStoreProvider = ({
   const storeRef = useRef<GameStoreApi | null>(null)
 
   if (storeRef.current === null) {
-    // Initialize with game data if provided
-    const initialCode = gameData?.problem?.functionSignature || `function twoSum(nums, target) {
-  // Your solution here
-}`
-
     // Extract current player and opponent data
     const currentPlayerData: User | null = user ? {
       _id: user.id,
@@ -58,11 +53,11 @@ export const GameStoreProvider = ({
       gameStatus: gameData.status,
       timeRemaining: gameData.timeLimit * 60, // Convert minutes to seconds
       currentPlayerCode: userRole === "host"
-        ? gameData.hostCode || initialCode
-        : gameData.challengerCode || initialCode,
+        ? gameData.hostCode || ""
+        : gameData.challengerCode || "",
       opponentCode: userRole === "host"
-        ? gameData.challengerCode || initialCode
-        : gameData.hostCode || initialCode,
+        ? gameData.challengerCode || ""
+        : gameData.hostCode || "",
       isConnected: userRole === "host" ? gameData.hostJoined : gameData.challengerJoined,
       opponentConnected: userRole === "host" ? gameData.challengerJoined : gameData.hostJoined,
       gameResult: gameData.result || null,

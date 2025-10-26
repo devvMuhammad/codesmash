@@ -15,10 +15,10 @@ import { SUPPORTED_LANGUAGES } from "@/lib/config"
 interface CurrentPlayerPanelProps {
   collapsed: boolean
   gameId: string
-  initialCode: string
 }
 
-export function CurrentPlayerPanel({ collapsed, gameId, initialCode }: CurrentPlayerPanelProps) {
+export function CurrentPlayerPanel({ collapsed, gameId }: CurrentPlayerPanelProps) {
+  const currentPlayerCode = useGameStore(state => state.currentPlayerCode)
 
   return (
     <Panel defaultSize={collapsed ? 100 : 50} minSize={30}>
@@ -28,7 +28,7 @@ export function CurrentPlayerPanel({ collapsed, gameId, initialCode }: CurrentPl
           <SelectLanguage />
         </div>
         <div className="flex-1 min-h-0">
-          <CurrentPlayerEditor gameId={gameId} initialCode={initialCode} />
+          <CurrentPlayerEditor gameId={gameId} initialCode={currentPlayerCode} />
         </div>
       </div>
     </Panel>
