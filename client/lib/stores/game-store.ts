@@ -1,5 +1,5 @@
 import { createStore } from 'zustand/vanilla'
-import { PlayerRolesType, User } from '@/lib/validations/game'
+import { PlayerRolesType, Problem, User } from '@/lib/validations/game'
 import { SUPPORTED_LANGUAGES } from '../config'
 
 export interface GameResult {
@@ -11,6 +11,9 @@ export interface GameResult {
 export interface GameState {
   // Core game data
   userRole: PlayerRolesType | null
+
+  // Problem data
+  problem: Problem | null
 
   // Player data
   currentPlayerData: User | null
@@ -58,6 +61,7 @@ export type GameStore = GameState & GameActions
 
 export const defaultInitState: GameState = {
   userRole: null,
+  problem: null,
   currentPlayerData: null,
   opponentData: null,
   timeRemaining: 0,

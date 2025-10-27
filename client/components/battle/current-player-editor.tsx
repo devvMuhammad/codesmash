@@ -9,10 +9,9 @@ import { CodeLocalStorage } from "@/lib/services/localStorage"
 
 interface CurrentPlayerEditorProps {
   gameId: string
-  initialCode?: string
 }
 
-export function CurrentPlayerEditor({ gameId, initialCode }: CurrentPlayerEditorProps) {
+export function CurrentPlayerEditor({ gameId }: CurrentPlayerEditorProps) {
   const currentPlayerCode = useGameStore((state) => state.currentPlayerCode)
   const setCurrentPlayerCode = useGameStore((state) => state.setCurrentPlayerCode)
   const { sendCodeUpdate } = useGame()
@@ -26,13 +25,12 @@ export function CurrentPlayerEditor({ gameId, initialCode }: CurrentPlayerEditor
 
   // Initialize code from localStorage on mount
   useEffect(() => {
-    const fallbackCode = initialCode || "";
-    const savedCode = CodeLocalStorage.loadCode(gameId, fallbackCode)
+    const savedCode = CodeLocalStorage.loadCode(gameId, "")
     // initially, player code is prefilled form server, if it is same as what is in local storage then we can prevent one useless re-render
     if (savedCode !== currentPlayerCode) {
       setCurrentPlayerCode(savedCode)
     }
-  }, [gameId, initialCode, currentPlayerCode, setCurrentPlayerCode])
+  }, [gameId, currentPlayerCode, setCurrentPlayerCode])
 
   const handleCodeChange = useCallback((newCode: string) => {
     // Immediate localStorage save

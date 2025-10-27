@@ -11,6 +11,7 @@ import { Panel } from "react-resizable-panels"
 import { CurrentPlayerEditor } from "./current-player-editor"
 import { useGameStore } from "@/providers/game-store-provider"
 import { SUPPORTED_LANGUAGES } from "@/lib/config"
+import { SupportedLanguage } from "@/types/problem"
 
 interface CurrentPlayerPanelProps {
   collapsed: boolean
@@ -18,7 +19,6 @@ interface CurrentPlayerPanelProps {
 }
 
 export function CurrentPlayerPanel({ collapsed, gameId }: CurrentPlayerPanelProps) {
-  const currentPlayerCode = useGameStore(state => state.currentPlayerCode)
 
   return (
     <Panel defaultSize={collapsed ? 100 : 50} minSize={30}>
@@ -28,7 +28,7 @@ export function CurrentPlayerPanel({ collapsed, gameId }: CurrentPlayerPanelProp
           <SelectLanguage />
         </div>
         <div className="flex-1 min-h-0">
-          <CurrentPlayerEditor gameId={gameId} initialCode={currentPlayerCode} />
+          <CurrentPlayerEditor gameId={gameId} />
         </div>
       </div>
     </Panel>
@@ -53,8 +53,15 @@ function SelectLanguage() {
 
   const selectedLanguae = useGameStore(state => state.selectedLanguage);
   const setSelectedLanguage = useGameStore(state => state.setSelectedLanguage)
+  const setCurrentPlayerCode = useGameStore(state => state.setCurrentPlayerCode)
+  const problem = useGameStore(state => state.problem)
 
-  return <Select value={selectedLanguae} onValueChange={setSelectedLanguage} defaultValue={SUPPORTED_LANGUAGES[0].name}>
+  return <Select value={selectedLanguae} onValueChange={(value) => {
+    setSelectedLanguage(value)
+    if (problem) {
+      setCurrentPlayerCode(problem!.initialCodes[value as keyof typeof problem.initialCodes])
+    }
+  }} defaultValue={SUPPORTED_LANGUAGES[0].name}>
     <SelectTrigger size="sm" className="w-32 data-[size=sm]:h-7  text-xs">
       <SelectValue />
     </SelectTrigger>
