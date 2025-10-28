@@ -11,7 +11,9 @@ import { Panel } from "react-resizable-panels"
 import { CurrentPlayerEditor } from "./current-player-editor"
 import { useGameStore } from "@/providers/game-store-provider"
 import { SUPPORTED_LANGUAGES } from "@/lib/config"
-import { SupportedLanguage } from "@/types/problem"
+import { useEffect } from "react"
+import { CodeLocalStorage } from "@/lib/services/localStorage"
+import { useParams } from "next/navigation"
 
 interface CurrentPlayerPanelProps {
   collapsed: boolean
@@ -50,18 +52,27 @@ function PlayerStatus() {
 }
 
 function SelectLanguage() {
-
-  const selectedLanguae = useGameStore(state => state.selectedLanguage);
+  const selectedLanguage = useGameStore(state => state.selectedLanguage);
   const setSelectedLanguage = useGameStore(state => state.setSelectedLanguage)
-  const setCurrentPlayerCode = useGameStore(state => state.setCurrentPlayerCode)
-  const problem = useGameStore(state => state.problem)
+  const gameId = useParams().gameId as string
 
-  return <Select value={selectedLanguae} onValueChange={(value) => {
-    setSelectedLanguage(value)
-    if (problem) {
-      setCurrentPlayerCode(problem!.initialCodes[value as keyof typeof problem.initialCodes])
+
+  useEffect(() => {
+    const lastSelectedLanguage = CodeLocalStorage.loadLastSelectedLanguage(gameId)
+    // to avoid setting language to null and avoid unnecessary re-renders
+    if (lastSelectedLanguage && lastSelectedLanguage !== selectedLanguage) {
+      setSelectedLanguage(lastSelectedLanguage)
     }
-  }} defaultValue={SUPPORTED_LANGUAGES[0].name}>
+  }, [gameId, setSelectedLanguage, selectedLanguage])
+
+  return <Select
+    value={selectedLanguage}
+    onValueChange={(value) => {
+      setSelectedLanguage(value)
+      CodeLocalStorage.saveLastSelectedLanguage(gameId, value)
+    }}
+    defaultValue={SUPPORTED_LANGUAGES[0].name}
+  >
     <SelectTrigger size="sm" className="w-32 data-[size=sm]:h-7  text-xs">
       <SelectValue />
     </SelectTrigger>

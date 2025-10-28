@@ -1,7 +1,6 @@
 "use client"
 
 import Editor, { OnMount } from "@monaco-editor/react"
-import type * as monaco from "monaco-editor"
 
 interface MonacoEditorProps {
   value: string
@@ -11,7 +10,7 @@ interface MonacoEditorProps {
   playerId: string
 }
 
-export function MonacoEditor({ value, onChange, language, readOnly = false, playerId }: MonacoEditorProps) {
+export function MonacoEditor({ value, onChange, language, readOnly = false }: MonacoEditorProps) {
   const handleEditorDidMount: OnMount = (_, monaco) => {
     // Configure Monaco Editor theme
     monaco.editor.defineTheme("CodeSmashDark", {
@@ -43,38 +42,6 @@ export function MonacoEditor({ value, onChange, language, readOnly = false, play
 
     // Apply the theme
     monaco.editor.setTheme("CodeSmashDark")
-
-    // Configure Monaco Editor for better integration
-    monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-      noSemanticValidation: true,
-      noSyntaxValidation: false,
-    })
-
-    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
-      target: monaco.languages.typescript.ScriptTarget.ES2020,
-      allowNonTsExtensions: true,
-    })
-
-    // Add custom completions for common coding interview patterns
-    monaco.languages.registerCompletionItemProvider("javascript", {
-      provideCompletionItems: (
-        model: monaco.editor.ITextModel,
-        position: monaco.IPosition,
-        context: monaco.languages.CompletionContext,
-        token: monaco.CancellationToken
-      ) => {
-        const word = model.getWordUntilPosition(position)
-        const range = {
-          startLineNumber: position.lineNumber,
-          endLineNumber: position.lineNumber,
-          startColumn: word.startColumn,
-          endColumn: word.endColumn,
-        }
-
-
-        return { suggestions: [] }
-      },
-    })
   }
 
   return (
