@@ -3,55 +3,45 @@ import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import rehypeHighlight from "rehype-highlight"
 import { markdownComponents } from "@/components/markdown-renderer"
+import { useGameStore } from "@/providers/game-store-provider"
 
-const problem = {
-  title: "Two Sum",
-  difficulty: "Easy",
-  description: `
-Given an array of integers \`nums\` and an integer \`target\`, return indices of the two numbers such that they add up to \`target\`.
+const getDifficultyStyles = (difficulty: string | undefined) => {
+  const normalizedDifficulty = difficulty?.toLowerCase()
 
-You may assume that each input would have exactly one solution, and you may not use the same element twice.
-
-You can return the answer in any order.
-
-### Example 1:
-
-\`\`\`
-Input: nums = [2,7,11,15], target = 9
-Output: [0,1]
-Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
-\`\`\`
-
-### Example 2:
-
-\`\`\`
-Input: nums = [3,2,4], target = 6
-Output: [1,2]
-\`\`\`
-
-### Constraints:
-
-*   \`2 <= nums.length <= 10^4\`
-*   \`-10^9 <= nums[i] <= 10^9\`
-*   \`-10^9 <= target <= 10^9\`
-*   **Only one valid answer exists.**
-`
+  switch (normalizedDifficulty) {
+    case 'easy':
+      return 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20'
+    case 'medium':
+      return 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/20'
+    case 'hard':
+      return 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30 hover:bg-rose-500/20'
+    default:
+      return 'bg-secondary text-secondary-foreground'
+  }
 }
 
 export function ProblemPanel() {
+
+  const problem = useGameStore(state => state.problem)
+
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between p-4 border-b border-border/40">
         <div className="flex items-center space-x-4">
-          <h1 className="text-xl font-bold text-foreground">{problem.title}</h1>
-          <Badge variant="secondary">{problem.difficulty}</Badge>
+          <h1 className="text-xl font-bold text-foreground">{problem?.title}</h1>
+          <Badge
+            variant="outline"
+            className={getDifficultyStyles(problem?.difficulty)}
+          >
+            {problem?.difficulty}
+          </Badge>
         </div>
       </div>
 
       <div className="flex-1 overflow-auto p-4">
         <ReactMarkdown components={markdownComponents} remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeHighlight]}>
-          {problem.description}
+          {problem?.description}
         </ReactMarkdown>
       </div>
     </div>
