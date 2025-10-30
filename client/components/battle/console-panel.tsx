@@ -4,6 +4,8 @@ import { Panel, PanelResizeHandle } from "react-resizable-panels"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { OutputTerminal } from "./output-terminal"
+import { useGameStore } from "@/providers/game-store-provider"
+import { useShallow } from 'zustand/react/shallow'
 
 interface ConsolePanelProps {
   collapsed: boolean
@@ -11,6 +13,12 @@ interface ConsolePanelProps {
 }
 
 export function ConsolePanel({ collapsed, onCollapse }: ConsolePanelProps) {
+  const { consoleOutput } = useGameStore(
+    useShallow((state) => ({
+      consoleOutput: state.consoleOutput,
+    }))
+  )
+
   if (collapsed) {
     return (
       <div className="h-12 border-t border-border/40 bg-muted/10 flex items-center justify-between px-4">
@@ -40,12 +48,13 @@ export function ConsolePanel({ collapsed, onCollapse }: ConsolePanelProps) {
               size="sm"
               onClick={() => onCollapse(true)}
               className="h-6 w-6 p-0 hover:bg-muted"
+              title="Collapse Console"
             >
               <ChevronDown className="h-4 w-4" />
             </Button>
           </div>
           <div className="flex-1 min-h-0">
-            <OutputTerminal />
+            <OutputTerminal output={consoleOutput} />
           </div>
         </div>
       </Panel>

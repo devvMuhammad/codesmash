@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { CreateGameFormData, CreateGameResponse, createGameResponseSchema } from "@/lib/validations/game"
+import { CreateGameFormData, CreateGameResponse, createGameResponseSchema, User } from "@/lib/validations/game"
 import { getHostId } from "../utils"
 import { API_BASE_URL } from "../config"
 
@@ -42,19 +42,23 @@ export function useCreateGame() {
   })
 }
 
+
 export interface UserChallenge {
   _id: string
-  hostId: string
-  challengerId?: string
+  host: User
+  challenger?: User
   inviteCode: string
-  spectatorCode: string
   status: "waiting" | "in_progress" | "completed" | "cancelled"
-  problemId: string
-  createdAt: string
-  expiresAt: string
-  timeLimit: number
+  problem: string
   difficulty: "easy" | "medium" | "hard"
+  timeLimit: number
+  hostJoined: boolean
+  challengerJoined: boolean
+  hostCode: string
+  challengerCode: string
+  createdAt: string
   updatedAt: string
+  __v: number
 }
 
 export async function getUserChallenges(userId: string): Promise<UserChallenge[]> {

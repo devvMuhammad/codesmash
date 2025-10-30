@@ -29,12 +29,9 @@ export type TestStatus = "PASS" | "FAIL" | "ERROR";
 // Single test case result
 export interface TestResult {
   testCase: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  input: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  expected: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  actual: any;
+  input: unknown;
+  expected: unknown;
+  actual: unknown;
   status: TestStatus;
   error?: string;
 }
@@ -59,5 +56,6 @@ export interface SubmitCodeResponse {
   allTestsPassed: boolean;
   compileError?: string;
   runtimeError?: string;
+  statusDescription?: string;
 }
 

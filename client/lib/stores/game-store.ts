@@ -1,11 +1,30 @@
 import { createStore } from 'zustand/vanilla'
 import { PlayerRolesType, Problem, User } from '@/lib/validations/game'
 import { SUPPORTED_LANGUAGES } from '../config'
+import type { TestResult } from '@/types/problem'
 
 export interface GameResult {
   reason: 'forfeit' | 'time_up' | 'completed'
   winner: string
   message: string
+}
+
+export interface ConsoleOutput {
+  type: 'compilation_error' | 'runtime_error' | 'test_results' | 'idle'
+  timestamp: string
+
+  // For errors
+  error?: string
+  statusDescription?: string
+
+  // For test results
+  totalTests?: number
+  passedTests?: number
+  failedTests?: number
+  executionTime?: string
+  memory?: number
+  testResults?: TestResult[]
+  allTestsPassed?: boolean
 }
 
 export interface GameState {
@@ -34,6 +53,9 @@ export interface GameState {
   // WebSocket state
   isConnected: boolean
   opponentConnected: boolean
+
+  // Console output state
+  consoleOutput: ConsoleOutput | null
 }
 
 export interface GameActions {
@@ -55,6 +77,10 @@ export interface GameActions {
 
   // Language state actions
   setSelectedLanguage: (language: string) => void
+
+  // Console output actions
+  setConsoleOutput: (output: ConsoleOutput | null) => void
+  clearConsoleOutput: () => void
 }
 
 export type GameStore = GameState & GameActions
@@ -71,7 +97,8 @@ export const defaultInitState: GameState = {
   opponentCode: "",
   isConnected: false,
   opponentConnected: false,
-  selectedLanguage: SUPPORTED_LANGUAGES[0].name
+  selectedLanguage: SUPPORTED_LANGUAGES[0].name,
+  consoleOutput: null
 }
 
 export const createGameStore = (
@@ -111,5 +138,12 @@ export const createGameStore = (
     // Language state actions
     setSelectedLanguage: (language: string) =>
       set({ selectedLanguage: language }),
+
+    // Console output actions
+    setConsoleOutput: (output: ConsoleOutput | null) =>
+      set({ consoleOutput: output }),
+
+    clearConsoleOutput: () =>
+      set({ consoleOutput: null }),
   }))
 }

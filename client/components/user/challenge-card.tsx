@@ -56,6 +56,7 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
 
   const isGameFinished = challenge.status === "completed" || challenge.status === "cancelled"
 
+  console.log(challenge)
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
@@ -75,7 +76,7 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex items-center gap-2 text-muted-foreground">
             <Users className="h-4 w-4" />
-            <span>{challenge.challengerId ? 2 : 1} players</span>
+            <span>{challenge.challenger?.name ? 2 : 1} players</span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="h-4 w-4" />
@@ -87,13 +88,13 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Target className="h-4 w-4" />
-            <span>Problem #{challenge.problemId.slice(0, 6)}</span>
+            <span>Problem #{challenge.problem}</span>
           </div>
         </div>
 
-        {challenge.expiresAt && new Date(challenge.expiresAt) > new Date() && (
+        {challenge.createdAt && new Date(new Date(challenge.createdAt).getTime() + challenge.timeLimit * 1000) > new Date() && (
           <div className="text-xs text-muted-foreground">
-            Expires {formatDate(challenge.expiresAt)}
+            Expires {formatDate(new Date(new Date(challenge.createdAt).getTime() + challenge.timeLimit * 1000).toISOString())}
           </div>
         )}
 
