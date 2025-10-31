@@ -5,7 +5,7 @@ import rehypeHighlight from "rehype-highlight"
 import { markdownComponents } from "@/components/markdown-renderer"
 import { useGameStore } from "@/providers/game-store-provider"
 
-const getDifficultyStyles = (difficulty: string | undefined) => {
+const getDifficultyStyles = (difficulty: string) => {
   const normalizedDifficulty = difficulty?.toLowerCase()
 
   switch (normalizedDifficulty) {
@@ -31,7 +31,7 @@ export function ProblemPanel() {
           <h1 className="text-xl font-bold text-foreground">{problem?.title}</h1>
           <Badge
             variant="outline"
-            className={getDifficultyStyles(problem?.difficulty)}
+            className={getDifficultyStyles(problem?.difficulty ?? '')}
           >
             {problem?.difficulty}
           </Badge>
