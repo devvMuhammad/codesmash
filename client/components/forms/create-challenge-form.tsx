@@ -4,7 +4,7 @@ import { UseFormReturn } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Timer, Trophy, Calendar } from "lucide-react"
+import { Timer, Trophy } from "lucide-react"
 import { CreateGameFormData } from "@/lib/validations/game"
 import { gameConfig } from "@/lib/config/game"
 
@@ -67,33 +67,6 @@ export function CreateChallengeForm({ form, onSubmit, isLoading, error }: Create
         </div>
         {form.formState.errors.timeLimit && (
           <p className="text-sm text-red-500 ml-[156px]">{form.formState.errors.timeLimit.message}</p>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <div className="flex items-center gap-4">
-          <Label htmlFor="expiresIn" className="flex items-center gap-2 min-w-[140px]">
-            <Calendar className="h-4 w-4" />
-            Expires In
-          </Label>
-          <Select
-            value={form.watch("expiresIn").toString()}
-            onValueChange={(value) => form.setValue("expiresIn", parseInt(value))}
-          >
-            <SelectTrigger className="flex-1">
-              <SelectValue placeholder="Select expiration time" />
-            </SelectTrigger>
-            <SelectContent>
-              {gameConfig.options.expiresIn.map((option) => (
-                <SelectItem key={option.value} value={option.value.toString()}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        {form.formState.errors.expiresIn && (
-          <p className="text-sm text-red-500 ml-[156px]">{form.formState.errors.expiresIn.message}</p>
         )}
       </div>
 
