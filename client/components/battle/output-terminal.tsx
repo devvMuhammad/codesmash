@@ -4,6 +4,7 @@ import { Terminal } from "lucide-react"
 import { CompilationErrorView } from "./compilation-error-view"
 import { RuntimeErrorView } from "./runtime-error-view"
 import { TestResultsView } from "./test-results-view"
+import { RunResultsView } from "./run-results-view"
 import type { ConsoleOutput } from "@/lib/stores/game-store"
 
 interface OutputTerminalProps {
@@ -22,7 +23,7 @@ export function OutputTerminal({ output }: OutputTerminalProps) {
           <div className="space-y-1">
             <h3 className="text-sm font-medium text-foreground">No Output Yet</h3>
             <p className="text-xs text-muted-foreground">
-              Submit your code to see test results, compilation errors, or runtime output here.
+              Run or submit your code to see test results, compilation errors, or runtime output here.
             </p>
           </div>
         </div>
@@ -34,8 +35,9 @@ export function OutputTerminal({ output }: OutputTerminalProps) {
   if (output.type === 'compilation_error') {
     return (
       <CompilationErrorView
-        error={output.error || "Unknown compilation error"}
+        error={output.error}
         statusDescription={output.statusDescription}
+        source={output.source}
       />
     )
   }
@@ -43,8 +45,9 @@ export function OutputTerminal({ output }: OutputTerminalProps) {
   if (output.type === 'runtime_error') {
     return (
       <RuntimeErrorView
-        error={output.error || "Unknown runtime error"}
+        error={output.error}
         statusDescription={output.statusDescription}
+        source={output.source}
       />
     )
   }
@@ -52,13 +55,24 @@ export function OutputTerminal({ output }: OutputTerminalProps) {
   if (output.type === 'test_results') {
     return (
       <TestResultsView
-        totalTests={output.totalTests || 0}
-        passedTests={output.passedTests || 0}
-        failedTests={output.failedTests || 0}
-        executionTime={output.executionTime || "0"}
-        memory={output.memory || 0}
-        testResults={output.testResults || []}
-        allTestsPassed={output.allTestsPassed || false}
+        totalTests={output.totalTests}
+        passedTests={output.passedTests}
+        failedTests={output.failedTests}
+        executionTime={output.executionTime}
+        memory={output.memory}
+        testResults={output.testResults}
+        allTestsPassed={output.allTestsPassed}
+      />
+    )
+  }
+
+  if (output.type === 'run_results') {
+    return (
+      <RunResultsView
+        stdout={output.stdout}
+        sampleTestResults={output.sampleTestResults}
+        executionTime={output.executionTime}
+        memory={output.memory}
       />
     )
   }

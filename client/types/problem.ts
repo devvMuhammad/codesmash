@@ -9,6 +9,8 @@ export interface IProblem {
   description: string;
   difficulty: DifficultyType;
   testCases: string;
+  sampleTestCases: string;
+  sampleTestCasesOutput: string;
   initialCodes: {
     python: string;
     javascript: string;
@@ -54,6 +56,34 @@ export interface SubmitCodeResponse {
   memory: number;
   testResults: TestResult[];
   allTestsPassed: boolean;
+  compileError?: string;
+  runtimeError?: string;
+  statusDescription?: string;
+}
+
+// Sample test result (for run code feature)
+export interface SampleTestResult {
+  testCase: number;
+  input: string;
+  expectedOutput: string;
+  actualOutput: string;
+  passed: boolean;
+}
+
+// Run code request (lighter than submit - only sample tests)
+export interface RunCodeRequest {
+  code: string;
+  language: SupportedLanguage;
+  gameId?: string;
+}
+
+// Run code response (includes stdout + sample test comparisons)
+export interface RunCodeResponse {
+  success: boolean;
+  stdout: string;
+  sampleTestResults: SampleTestResult[];
+  executionTime: string;
+  memory: number;
   compileError?: string;
   runtimeError?: string;
   statusDescription?: string;

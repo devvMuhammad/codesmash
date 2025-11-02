@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card"
 interface CompilationErrorViewProps {
   error: string
   statusDescription?: string
+  source?: 'run' | 'submission'
 }
 
 export function CompilationErrorView({ error, statusDescription }: CompilationErrorViewProps) {

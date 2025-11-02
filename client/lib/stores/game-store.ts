@@ -9,23 +9,72 @@ export interface GameResult {
   message: string
 }
 
-export interface ConsoleOutput {
-  type: 'compilation_error' | 'runtime_error' | 'test_results' | 'idle'
-  timestamp: string
-
-  // For errors
-  error?: string
-  statusDescription?: string
-
-  // For test results
-  totalTests?: number
-  passedTests?: number
-  failedTests?: number
-  executionTime?: string
-  memory?: number
-  testResults?: TestResult[]
-  allTestsPassed?: boolean
+// Sample test result (for run code feature)
+export interface SampleTestResult {
+  testCase: number
+  input: string
+  expectedOutput: string
+  actualOutput: string
+  passed: boolean
 }
+
+// Base interface for common fields
+interface BaseConsoleOutput {
+  timestamp: string
+}
+
+// Idle state - no output yet
+interface IdleConsoleOutput extends BaseConsoleOutput {
+  type: 'idle'
+  source: null
+}
+
+// Compilation error (can be from run or submission)
+interface CompilationErrorOutput extends BaseConsoleOutput {
+  type: 'compilation_error'
+  source: 'run' | 'submission'
+  error: string
+  statusDescription?: string
+}
+
+// Runtime error (can be from run or submission)
+interface RuntimeErrorOutput extends BaseConsoleOutput {
+  type: 'runtime_error'
+  source: 'run' | 'submission'
+  error: string
+  statusDescription?: string
+}
+
+// Test results from submission (all test cases)
+interface SubmissionTestResultsOutput extends BaseConsoleOutput {
+  type: 'test_results'
+  source: 'submission'
+  totalTests: number
+  passedTests: number
+  failedTests: number
+  executionTime: string
+  memory: number
+  testResults: TestResult[]
+  allTestsPassed: boolean
+}
+
+// Run results from run code (sample test cases + stdout)
+interface RunCodeResultsOutput extends BaseConsoleOutput {
+  type: 'run_results'
+  source: 'run'
+  stdout: string
+  sampleTestResults: SampleTestResult[]
+  executionTime: string
+  memory: number
+}
+
+// Discriminated union of all console output types
+export type ConsoleOutput =
+  | IdleConsoleOutput
+  | CompilationErrorOutput
+  | RuntimeErrorOutput
+  | SubmissionTestResultsOutput
+  | RunCodeResultsOutput
 
 export interface GameState {
   // Core game data

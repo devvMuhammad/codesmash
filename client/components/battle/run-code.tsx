@@ -1,34 +1,34 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Send, Loader2 } from "lucide-react"
+import { Play, Loader2 } from "lucide-react"
 import { useGameStore } from "@/providers/game-store-provider"
 import { useShallow } from 'zustand/react/shallow'
-import { useSubmitCode } from "@/hooks/use-submit-code"
+import { useRunCode } from "@/hooks/use-run-code"
 
-export function SubmitCode() {
+export function RunCode() {
   const { gameStatus } = useGameStore(
     useShallow((state) => ({
       gameStatus: state.gameStatus,
     }))
   )
 
-  const { submitCode, isPending, isDisabled } = useSubmitCode()
+  const { runCode, isPending, isDisabled } = useRunCode()
 
   return (
     <Button
       variant="outline"
       size="sm"
-      className="bg-green-600/10 text-green-400 border-green-600/20 hover:bg-green-600/20"
-      onClick={() => submitCode()}
+      className="bg-blue-600/10 text-blue-400 border-blue-600/20 hover:bg-blue-600/20"
+      onClick={() => runCode()}
       disabled={gameStatus !== "in_progress" || isPending || isDisabled}
     >
       {isPending ? (
         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
       ) : (
-        <Send className="h-4 w-4 mr-2" />
+        <Play className="h-4 w-4 mr-2" />
       )}
-      Submit
+      Run Code
     </Button>
   )
 }

@@ -8,6 +8,7 @@ import { InviteDropdown } from "./invite-dropdown"
 import { ForfeitGameDialog } from "./forfeit-game-dialog"
 import { UserProfile } from "./user-profile"
 import { MatchInfo } from "./match-info"
+import { RunCode } from "./run-code"
 import { SubmitCode } from "./submit-code"
 
 interface BattleNavbarProps {
@@ -33,6 +34,7 @@ export function BattleNavbar({ gameId, inviteCode }: BattleNavbarProps) {
             inviteCode={inviteCode}
           />
         )}
+        <RunCode />
         <SubmitCode />
         <ThemeSwitcher />
         <Button variant="ghost" size="sm">

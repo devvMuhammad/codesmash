@@ -1,16 +1,14 @@
 import { useMutation } from "@tanstack/react-query"
-import { submitCode } from "@/lib/api/problem"
-import type { SubmitCodeRequest } from "@/types/problem"
+import { runCode } from "@/lib/api/problem"
+import type { RunCodeRequest } from "@/types/problem"
 import { toast } from "sonner"
 import { useGameStore } from "@/providers/game-store-provider"
 import { useShallow } from 'zustand/react/shallow'
 import { useParams } from "next/navigation"
-import { useSession } from "@/lib/auth-client"
 
-export function useSubmitCode() {
+export function useRunCode() {
   const params = useParams()
   const gameId = params?.gameId as string
-  const { data: session } = useSession()
 
   const { setConsoleOutput, problem, currentPlayerCode, selectedLanguage } = useGameStore(
     useShallow((state) => ({
@@ -24,27 +22,16 @@ export function useSubmitCode() {
   const mutation = useMutation({
     mutationFn: async () => {
       const problemId = problem?._id
-      const userId = session?.user?.id
-
       if (!problemId) {
         throw new Error("Problem ID not found")
       }
 
-      if (!userId) {
-        throw new Error("User ID not found")
-      }
-
-      if (!gameId) {
-        throw new Error("Game ID not found")
-      }
-
-      const request: SubmitCodeRequest = {
+      const request: RunCodeRequest = {
         code: currentPlayerCode,
-        language: selectedLanguage as SubmitCodeRequest["language"],
-        gameId,
-        userId
+        language: selectedLanguage as RunCodeRequest["language"],
+        gameId
       }
-      return submitCode(problemId, request)
+      return runCode(problemId, request)
     },
     onSuccess: (data) => {
       const timestamp = new Date().toISOString()
@@ -53,7 +40,7 @@ export function useSubmitCode() {
       if (data.compileError) {
         setConsoleOutput({
           type: 'compilation_error',
-          source: 'submission',
+          source: 'run',
           timestamp,
           error: data.compileError,
           statusDescription: data.statusDescription
@@ -68,7 +55,7 @@ export function useSubmitCode() {
       if (data.runtimeError) {
         setConsoleOutput({
           type: 'runtime_error',
-          source: 'submission',
+          source: 'run',
           timestamp,
           error: data.runtimeError,
           statusDescription: data.statusDescription
@@ -79,41 +66,40 @@ export function useSubmitCode() {
         return
       }
 
-      // Handle test results
+      // Handle successful run with sample test results
       setConsoleOutput({
-        type: 'test_results',
-        source: 'submission',
+        type: 'run_results',
+        source: 'run',
         timestamp,
-        totalTests: data.totalTests,
-        passedTests: data.passedTests,
-        failedTests: data.failedTests,
+        stdout: data.stdout,
+        sampleTestResults: data.sampleTestResults,
         executionTime: data.executionTime,
-        memory: data.memory,
-        testResults: data.testResults,
-        allTestsPassed: data.allTestsPassed
+        memory: data.memory
       })
 
-      if (data.allTestsPassed) {
-        toast.success(`All tests passed! (${data.passedTests}/${data.totalTests})`, {
-          description: `Execution time: ${data.executionTime}ms | Memory: ${data.memory}KB`,
+      const passedTests = data.sampleTestResults.filter(t => t.passed).length
+      const totalTests = data.sampleTestResults.length
+
+      if (passedTests === totalTests) {
+        toast.success(`All sample tests passed! (${passedTests}/${totalTests})`, {
+          description: `Execution time: ${data.executionTime}s`,
         })
       } else {
-        toast.warning(`${data.passedTests}/${data.totalTests} tests passed`, {
-          description: `${data.failedTests} test(s) failed`,
+        toast.warning(`${passedTests}/${totalTests} sample tests passed`, {
+          description: `${totalTests - passedTests} test(s) failed`,
         })
       }
     },
     onError: (error) => {
-      toast.error("Failed to submit code", {
+      toast.error("Failed to run code", {
         description: error.message,
       })
     },
   })
 
   return {
-    submitCode: mutation.mutate,
+    runCode: mutation.mutate,
     isPending: mutation.isPending,
-    isDisabled: !problem?._id || !session?.user?.id || !gameId
+    isDisabled: !problem?._id
   }
 }
-

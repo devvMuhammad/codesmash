@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 interface RuntimeErrorViewProps {
   error: string
   statusDescription?: string
+  source?: 'run' | 'submission'
 }
 
 export function RuntimeErrorView({ error, statusDescription }: RuntimeErrorViewProps) {
