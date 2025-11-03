@@ -5,7 +5,7 @@ export const gameStatusSchema = z.enum(["waiting", "ready_to_start", "in_progres
 
 export const createGameSchema = z.object({
   difficulty: difficultySchema,
-  timeLimit: z.number().min(15).max(120), // 15 minutes to 2 hours
+  timeLimit: z.number().min(1).max(120), // 1 minute to 2 hours
 })
 
 export type CreateGameFormData = z.infer<typeof createGameSchema>

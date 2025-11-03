@@ -178,6 +178,22 @@ export function GameWebSocketProvider({
       })
     })
 
+    socket.on("game_time_expired", (data: { gameId: string, result: { reason: "time_up", winner: string, message: string }, completedAt: Date, status: string }) => {
+      console.log("Game time expired:", data)
+
+      // Update game status to completed
+      setGameStatus("completed")
+
+      // Store the game result
+      setGameResult(data.result)
+
+      // Show time expired notification
+      toast.error("Time's Up!", {
+        description: data.result.message,
+        duration: 5000,
+      })
+    })
+
     // Cleanup on unmount
     return () => {
       socket.disconnect()

@@ -136,6 +136,53 @@ The application uses WebSocket connections for real-time features with strict ty
 - **State Synchronization**: Ensures consistent state across connected clients
 - **Player Management**: Tracks connection status, typing indicators, and game state
 
+#### Game Timer System Integration
+
+The client integrates with the server's BullMQ + Redis timer system for precise game time expiration:
+
+**WebSocket Events Handled:**
+```typescript
+// Time expiration event (from server)
+socket.on("game_time_expired", (data: {
+  gameId: string
+  result: {
+    reason: "time_up"
+    winner: string
+    message: string
+  }
+  completedAt: Date
+  status: "completed"
+}) => {
+  setGameStatus("completed")
+  setGameResult(data.result)
+  toast.error("Time's Up!", {
+    description: data.result.message,
+    duration: 5000
+  })
+})
+
+// Timer sync event (optional, prevents client drift)
+socket.on("timer_sync", (data: {
+  remaining: number
+  serverTime: number
+}) => {
+  // Update local timer display
+})
+
+// Request time sync (client → server)
+socket.emit("request_time_remaining")
+```
+
+**Integration Location:** `context/game-websocket-context.tsx`
+
+**Key Features:**
+- Automatic game end when time expires
+- Toast notification on expiration
+- Updates game store with completion result
+- Optional periodic sync to prevent timer drift
+
+For detailed timer architecture, see `../CLAUDE.md` → "Game Timer System" section.
+
 ### Code Editor Integration
 
 Monaco Editor integration with comprehensive TypeScript support:

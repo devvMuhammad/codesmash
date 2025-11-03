@@ -6,6 +6,8 @@ export const gameConfig = {
   },
   options: {
     timeLimit: [
+      { value: 1, label: "1 minute" },
+      { value: 5, label: "5 minutes" },
       { value: 15, label: "15 minutes" },
       { value: 30, label: "30 minutes" },
       { value: 45, label: "45 minutes" },
