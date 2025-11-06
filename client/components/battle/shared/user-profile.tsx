@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useSession } from "@/lib/auth-client"
-import { UserDropdown } from "../user-dropdown"
+import { UserDropdown } from "../../user-dropdown"
 
 export function UserProfile() {
   const { data: session, isPending: isLoading } = useSession()

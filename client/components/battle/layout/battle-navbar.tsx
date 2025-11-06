@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button"
 import { Settings } from "lucide-react"
 import Link from "next/link"
 import { ThemeSwitcher } from "@/components/theme-switcher"
-import { InviteDropdown } from "./invite-dropdown"
-import { ForfeitGameDialog } from "./forfeit-game-dialog"
-import { UserProfile } from "./user-profile"
+import { InviteDropdown } from "../dialogs/invite-dropdown"
+import { ForfeitGameDialog } from "../dialogs/forfeit-game-dialog"
+import { UserProfile } from "../shared/user-profile"
 import { MatchInfo } from "./match-info"
-import { RunCode } from "./run-code"
-import { SubmitCode } from "./submit-code"
+import { RunCode } from "../controls/run-code"
+import { SubmitCode } from "../controls/submit-code"
 
 interface BattleNavbarProps {
   gameId?: string

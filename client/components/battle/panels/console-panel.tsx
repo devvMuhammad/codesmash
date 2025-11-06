@@ -3,7 +3,7 @@
 import { Panel, PanelResizeHandle } from "react-resizable-panels"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp } from "lucide-react"
-import { OutputTerminal } from "./output-terminal"
+import { OutputTerminal } from "../results/output-terminal"
 import { useGameStore } from "@/providers/game-store-provider"
 import { useShallow } from 'zustand/react/shallow'
 

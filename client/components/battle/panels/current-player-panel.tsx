@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Panel } from "react-resizable-panels"
-import { CurrentPlayerEditor } from "./current-player-editor"
+import { CurrentPlayerEditor } from "../editor/current-player-editor"
 import { useGameStore } from "@/providers/game-store-provider"
 import { SUPPORTED_LANGUAGES } from "@/lib/config"
 import { useEffect } from "react"

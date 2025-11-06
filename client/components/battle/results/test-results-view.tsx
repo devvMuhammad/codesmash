@@ -4,7 +4,7 @@ import { CheckCircle, XCircle, Clock, Zap } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { TestCaseCard } from "./test-case-card"
+import { TestCaseCard } from "../test-cases/test-case-card"
 import type { TestResult } from "@/types/problem"
 
 interface TestResultsViewProps {
@@ -30,11 +30,10 @@ export function TestResultsView({
     <ScrollArea className="h-full">
       <div className="p-4 space-y-4">
         {/* Summary Header */}
-        <div className={`p-4 rounded-lg border ${
-          allTestsPassed
+        <div className={`p-4 rounded-lg border ${allTestsPassed
             ? "bg-green-500/10 border-green-500/20"
             : "bg-orange-500/10 border-orange-500/20"
-        }`}>
+          }`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               {allTestsPassed ? (
@@ -43,9 +42,8 @@ export function TestResultsView({
                 <XCircle className="h-5 w-5 text-orange-500" />
               )}
               <div>
-                <h3 className={`text-sm font-semibold ${
-                  allTestsPassed ? "text-green-500" : "text-orange-500"
-                }`}>
+                <h3 className={`text-sm font-semibold ${allTestsPassed ? "text-green-500" : "text-orange-500"
+                  }`}>
                   {allTestsPassed ? "All Tests Passed!" : "Some Tests Failed"}
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">

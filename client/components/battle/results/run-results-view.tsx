@@ -4,7 +4,7 @@ import { CheckCircle, XCircle, Clock, Zap, Terminal } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { SampleTestCaseCard } from "./sample-test-case-card"
+import { SampleTestCaseCard } from "../test-cases/sample-test-case-card"
 import type { SampleTestResult } from "@/lib/stores/game-store"
 
 interface RunResultsViewProps {
@@ -29,8 +29,8 @@ export function RunResultsView({
       <div className="p-4 space-y-4">
         {/* Summary Header */}
         <div className={`p-4 rounded-lg border ${allTestsPassed
-            ? "bg-blue-500/10 border-blue-500/20"
-            : "bg-orange-500/10 border-orange-500/20"
+          ? "bg-blue-500/10 border-blue-500/20"
+          : "bg-orange-500/10 border-orange-500/20"
           }`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
