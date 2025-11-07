@@ -9,7 +9,10 @@ import "./globals.css"
 import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
-  title: "CodeSmash - 1v1 Coding Platform",
+  title: {
+    template: "%s | CodeSmash",
+    default: "CodeSmash - 1v1 Coding Platform",
+  },
   description:
     "Challenge your friends in real-time coding duels. Compete, practice, and learn by solving problems together.",
 }

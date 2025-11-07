@@ -2,6 +2,12 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Code, Zap, Users, Trophy } from "lucide-react"
 import { CommonNavbar } from "@/components/common-navbar"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Challenge your friends in real-time coding duels. Compete, practice, and learn by solving problems together.",
+}
 
 export default function HomePage() {
   return (

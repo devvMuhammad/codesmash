@@ -341,6 +341,74 @@ Always use CSS variables through Tailwind classes instead of hardcoded colors. T
 </div>
 ```
 
+## Page Metadata
+
+**IMPORTANT: Every page must export proper metadata for SEO and browser tabs.**
+
+### Metadata Configuration
+
+The root layout (`app/layout.tsx`) uses a metadata template:
+
+```typescript
+export const metadata: Metadata = {
+  title: {
+    template: "%s | CodeSmash",
+    default: "CodeSmash - 1v1 Coding Platform",
+  },
+  description: "Challenge your friends in real-time coding duels...",
+}
+```
+
+### Page-Level Metadata
+
+Every page component should export metadata:
+
+```typescript
+// Server Component (no "use client")
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Page Title",  // Will become "Page Title | CodeSmash"
+  description: "Clear, SEO-friendly description of the page content",
+}
+
+export default function Page() {
+  // Component code
+}
+```
+
+### Client Components & Metadata
+
+**Rule**: Client components (those using `"use client"`) cannot export metadata.
+
+**Solutions**:
+1. Create a parent `layout.tsx` file with metadata
+2. Use a server component wrapper
+3. Let the parent route segment handle metadata
+
+### Dynamic Metadata
+
+For dynamic routes, use `generateMetadata`:
+
+```typescript
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const data = await fetchData(params.id)
+  
+  return {
+    title: data.title,
+    description: data.description,
+  }
+}
+```
+
+### Metadata Best Practices
+
+1. **Title**: Keep it concise and descriptive (50-60 characters)
+2. **Description**: 150-160 characters, describes page purpose clearly
+3. **Consistency**: All pages should have both title and description
+4. **SEO**: Use keywords naturally, avoid keyword stuffing
+5. **User-Friendly**: Titles appear in browser tabs and bookmarks
+
 ## Skeleton Loading States
 
 **IMPORTANT: ALWAYS create skeleton loading states for any page that fetches data. This is mandatory for good UX.**

@@ -3,6 +3,12 @@ import { type UserChallenge } from "@/lib/api/games"
 import { UserChallenges } from "@/components/user/user-challenges"
 import { getSessionServerSide } from "@/lib/api/user"
 import { API_BASE_URL } from "@/lib/config"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "My Challenges",
+  description: "View and manage all the coding challenges you've created on CodeSmash.",
+}
 
 async function getUserChallengesServer(userId: string): Promise<UserChallenge[]> {
   try {

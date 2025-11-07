@@ -1,0 +1,56 @@
+# Cursor Rules for CodeSmash Client
+
+## Metadata Requirements
+
+### Page Metadata
+Every page component must export metadata using Next.js Metadata API:
+
+- **Server Components**: Export `metadata` object directly
+- **Client Components**: Cannot export metadata (use parent layout or route segment)
+- **Template**: The root layout uses template `"%s | CodeSmash"` for all pages
+
+### Implementation Pattern
+
+```typescript
+// For Server Components (page.tsx without "use client")
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Page Title",
+  description: "Page description that describes the purpose and content",
+}
+
+export default function Page() {
+  // Component code
+}
+```
+
+### Metadata Guidelines
+1. **Title**: Short, descriptive page title (will be formatted as "Title | CodeSmash")
+2. **Description**: Clear description of page content and purpose (150-160 characters ideal)
+3. **Client Components**: If page uses "use client", create a parent layout.tsx for metadata
+4. **Dynamic Routes**: Use `generateMetadata` function for dynamic content
+
+### Examples
+
+**Home Page:**
+```typescript
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Challenge your friends in real-time coding duels.",
+}
+```
+
+**Battle Page:**
+```typescript
+export const metadata: Metadata = {
+  title: "Battle",
+  description: "Compete in a real-time 1v1 coding battle.",
+}
+```
+
+## Enforcement
+- All new pages MUST include metadata
+- Metadata MUST follow the pattern above
+- Descriptions MUST be meaningful and SEO-friendly
+

@@ -5,6 +5,12 @@ import type { JoinGameResponse } from "@/lib/validations/game"
 import { getSessionServerSide } from "@/lib/api/user"
 import { GameWebSocketProvider } from "@/context/game-websocket-context"
 import { GameStoreProvider } from "@/providers/game-store-provider"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Battle",
+  description: "Compete in a real-time 1v1 coding battle.",
+}
 
 interface DuelPageProps {
   params: Promise<{
