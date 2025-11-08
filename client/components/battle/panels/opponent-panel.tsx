@@ -4,6 +4,9 @@ import { Panel, PanelResizeHandle } from "react-resizable-panels"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useGameStore } from "@/providers/game-store-provider"
+import { TestProgressBar } from "../shared/test-progress-bar"
+import { useShallow } from "zustand/react/shallow"
+import { OpponentStatus } from "./opponent-status"
 
 interface OpponentPanelProps {
   collapsed: boolean
@@ -11,9 +14,19 @@ interface OpponentPanelProps {
 }
 
 export function OpponentPanel({ collapsed, onCollapse }: OpponentPanelProps) {
+  const { isConnected, opponentCode, hostTestsPassed, challengerTestsPassed, problem, userRole } = useGameStore(
+    useShallow((state) => ({
+      isConnected: state.opponentConnected,
+      opponentCode: state.opponentCode,
+      hostTestsPassed: state.hostTestsPassed,
+      challengerTestsPassed: state.challengerTestsPassed,
+      problem: state.problem,
+      userRole: state.userRole
+    }))
+  )
 
-  const isConnected = useGameStore((state) => state.opponentConnected)
-  const opponentCode = useGameStore((state) => state.opponentCode)
+  const opponentTestsPassed = userRole === 'host' ? challengerTestsPassed : hostTestsPassed
+  const totalTests = problem?.totalTestCases || 0
 
   if (collapsed) {
     return (
@@ -39,16 +52,13 @@ export function OpponentPanel({ collapsed, onCollapse }: OpponentPanelProps) {
       <PanelResizeHandle className="w-1 bg-border/40 hover:bg-border transition-colors" />
       <Panel defaultSize={50} minSize={30}>
         <div className="h-full flex flex-col">
+          <TestProgressBar
+            passed={opponentTestsPassed}
+            total={totalTests}
+            variant="opponent"
+          />
           <div className="h-10 border-b border-border/40 flex items-center justify-between px-3 bg-muted/20">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-muted-foreground">Opponent</span>
-              <div className="flex items-center gap-1">
-                <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                <span className={`text-xs ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
-                  {isConnected ? 'Connected' : 'Disconnected'}
-                </span>
-              </div>
-            </div>
+            <OpponentStatus isConnected={isConnected} />
             <Button
               variant="ghost"
               size="sm"
@@ -57,6 +67,7 @@ export function OpponentPanel({ collapsed, onCollapse }: OpponentPanelProps) {
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
+
           </div>
           <div className="flex-1 min-h-0 relative">
             <textarea

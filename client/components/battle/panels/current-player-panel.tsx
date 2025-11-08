@@ -14,6 +14,8 @@ import { SUPPORTED_LANGUAGES } from "@/lib/config"
 import { useEffect } from "react"
 import { CodeLocalStorage } from "@/lib/services/localStorage"
 import { useParams } from "next/navigation"
+import { TestProgressBar } from "../shared/test-progress-bar"
+import { useShallow } from "zustand/react/shallow"
 
 interface CurrentPlayerPanelProps {
   collapsed: boolean
@@ -21,10 +23,26 @@ interface CurrentPlayerPanelProps {
 }
 
 export function CurrentPlayerPanel({ collapsed, gameId }: CurrentPlayerPanelProps) {
+  const { hostTestsPassed, challengerTestsPassed, problem, userRole } = useGameStore(
+    useShallow((state) => ({
+      hostTestsPassed: state.hostTestsPassed,
+      challengerTestsPassed: state.challengerTestsPassed,
+      problem: state.problem,
+      userRole: state.userRole
+    }))
+  )
+
+  const myTestsPassed = userRole === 'host' ? hostTestsPassed : challengerTestsPassed
+  const totalTests = problem?.totalTestCases || 0
 
   return (
     <Panel defaultSize={collapsed ? 100 : 50} minSize={30}>
       <div className="h-full flex flex-col">
+        <TestProgressBar
+          passed={myTestsPassed}
+          total={totalTests}
+          variant="self"
+        />
         <div className="h-10 border-b border-border/40 flex items-center justify-between px-3 bg-muted/20">
           <PlayerStatus />
           <SelectLanguage />
