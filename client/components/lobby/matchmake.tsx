@@ -48,12 +48,12 @@ export function Matchmake({ children }: MatchmakeProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {children || (
+        {/* {children || (
           <Button size="lg" className="glow-blue">
             <Zap className="h-4 w-4 mr-2" />
             Find Match
           </Button>
-        )}
+        )} */}
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-md border-border/50 bg-card/95 backdrop-blur-sm">

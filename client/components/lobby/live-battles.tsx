@@ -6,125 +6,127 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Eye, Clock, Flame } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import Link from "next/link"
+import type { LiveBattle } from "@/lib/validations/game"
+import { formatTimeRemaining } from "@/lib/date-utils"
 
-const mockBattles = [
-  {
-    id: 1,
-    player1: { name: "Alex", avatar: "A", aura: 1250 },
-    player2: { name: "Sarah", avatar: "S", aura: 1890 },
-    problem: "Two Sum",
-    timeElapsed: "5:23",
-    status: "LIVE",
-  },
-  {
-    id: 2,
-    player1: { name: "Mike", avatar: "M", aura: 890 },
-    player2: { name: "Emma", avatar: "E", aura: 1340 },
-    problem: "Binary Search",
-    timeElapsed: "12:45",
-    status: "LIVE",
-  },
-  {
-    id: 3,
-    player1: { name: "David", avatar: "D", aura: 2100 },
-    player2: { name: "Lisa", avatar: "L", aura: 2450 },
-    problem: "Merge Intervals",
-    timeElapsed: "3:12",
-    status: "LIVE",
-  },
-]
+interface LiveBattlesProps {
+  battles: LiveBattle[]
+}
 
-export function LiveBattles() {
+function getAvatarInitial(name: string | undefined): string {
+  if (!name) return "?"
+  return name.charAt(0).toUpperCase()
+}
+
+function getHardcodedAura(name: string | undefined): number {
+  if (!name) return 1000
+  // Generate consistent aura based on name length and first character
+  const base = name.charCodeAt(0) * 100
+  const modifier = name.length * 50
+  return Math.floor((base + modifier) % 3000) + 500
+}
+
+export function LiveBattles({ battles }: LiveBattlesProps) {
   return (
     <TooltipProvider>
       <div className="space-y-6">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {mockBattles.map((battle) => (
-            <Link key={battle.id} href={`/duel/${battle.id}`}>
-              <Card className="p-4 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group hover:border-primary/50 cursor-pointer">
-                <div className="space-y-4">
-                  {/* Players */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="text-xs">{battle.player1.avatar}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="text-sm font-medium">{battle.player1.name}</p>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                              <Flame className="h-3 w-3 text-orange-500" />
-                              <span>{battle.player1.aura}</span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Aura points earned through victories</p>
-                          </TooltipContent>
-                        </Tooltip>
+        {battles.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {battles.map((battle) => {
+              const hostAura = getHardcodedAura(battle.host.name)
+              const challengerAura = getHardcodedAura(battle.challenger.name)
+              const timeRemaining = formatTimeRemaining(battle.remainingSeconds)
+
+              return (
+                <Link key={battle._id} href={`/battle/${battle._id}`}>
+                  <Card className="p-4 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group hover:border-primary/50 cursor-pointer">
+                    <div className="space-y-4">
+                      {/* Players */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback className="text-xs">
+                              {getAvatarInitial(battle.host.name)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="text-sm font-medium">{battle.host.name || "Unknown"}</p>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                                  <Flame className="h-3 w-3 text-orange-500" />
+                                  <span>{hostAura}</span>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Aura points earned through victories</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                        </div>
+
+                        <div className="text-muted-foreground text-sm font-bold">VS</div>
+
+                        <div className="flex items-center space-x-2">
+                          <div className="text-right">
+                            <p className="text-sm font-medium">{battle.challenger.name || "Unknown"}</p>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="flex items-center space-x-1 text-xs text-muted-foreground justify-end">
+                                  <Flame className="h-3 w-3 text-orange-500" />
+                                  <span>{challengerAura}</span>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Aura points earned through victories</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </div>
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback className="text-xs">
+                              {getAvatarInitial(battle.challenger.name)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </div>
                       </div>
+
+                      {/* Problem & Status */}
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground">
+                          Problem: <span className="text-foreground font-medium">{battle.problem.title}</span>
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            <span>{timeRemaining}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                            <span className="text-red-500 font-semibold text-sm animate-pulse">LIVE</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Watch Button */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                        }}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        Watch Battle
+                      </Button>
                     </div>
-
-                    <div className="text-muted-foreground text-sm font-bold">VS</div>
-
-                    <div className="flex items-center space-x-2">
-                      <div className="text-right">
-                        <p className="text-sm font-medium">{battle.player2.name}</p>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="flex items-center space-x-1 text-xs text-muted-foreground justify-end">
-                              <Flame className="h-3 w-3 text-orange-500" />
-                              <span>{battle.player2.aura}</span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Aura points earned through victories</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="text-xs">{battle.player2.avatar}</AvatarFallback>
-                      </Avatar>
-                    </div>
-                  </div>
-
-                  {/* Problem & Status */}
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">
-                      Problem: <span className="text-foreground font-medium">{battle.problem}</span>
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-                        <Clock className="h-3 w-3" />
-                        <span>{battle.timeElapsed}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                        <span className="text-red-500 font-semibold text-sm animate-pulse">{battle.status}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Watch Button */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full bg-gradient-to-r from-blue-600/10 to-purple-600/10 hover:from-blue-600 hover:to-purple-600 hover:text-white border-blue-500/50 hover:border-transparent transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/25"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                    }}
-                  >
-                    <Eye className="h-4 w-4 mr-2" />
-                    Watch Battle
-                  </Button>
-                </div>
-              </Card>
-            </Link>
-          ))}
-        </div>
-
-        {mockBattles.length === 0 && (
+                  </Card>
+                </Link>
+              )
+            })}
+          </div>
+        ) : (
           <div className="text-center py-12">
             <div className="text-muted-foreground mb-4">
               <Eye className="h-12 w-12 mx-auto mb-2 opacity-50" />

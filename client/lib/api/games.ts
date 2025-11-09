@@ -1,7 +1,7 @@
-import { useMutation, useQuery } from "@tanstack/react-query"
-import { CreateGameFormData, CreateGameResponse, createGameResponseSchema, User } from "@/lib/validations/game"
-import { getHostId } from "../utils"
-import { API_BASE_URL } from "../config"
+import { CreateGameFormData, CreateGameResponse, createGameResponseSchema, User, LiveBattle, liveBattleSchema, OpenChallenge, openChallengeSchema } from "@/lib/validations/game"
+import { getHostId } from "@/lib/utils"
+import { API_BASE_URL } from "@/lib/config"
+import { z } from "zod"
 
 export interface CreateGameRequest {
   host: string
@@ -34,14 +34,6 @@ export async function createGame(data: CreateGameFormData): Promise<CreateGameRe
   const result = await response.json()
   return createGameResponseSchema.parse(result)
 }
-
-export function useCreateGame() {
-
-  return useMutation({
-    mutationFn: createGame,
-  })
-}
-
 
 export interface UserChallenge {
   _id: string
@@ -77,10 +69,36 @@ export async function getUserChallenges(userId: string): Promise<UserChallenge[]
   return challenges
 }
 
-export function useUserChallenges(userId: string) {
-  return useQuery({
-    queryKey: ["userChallenges", userId],
-    queryFn: () => getUserChallenges(userId),
-    enabled: !!userId,
+export async function getLiveBattles(): Promise<LiveBattle[]> {
+  const response = await fetch(`${API_BASE_URL}/api/games/live`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: 'no-store', // Ensure fresh data for real-time game state
   })
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch live battles: ${response.statusText}`)
+  }
+
+  const result = await response.json()
+  return z.array(liveBattleSchema).parse(result)
+}
+
+export async function getOpenChallenges(): Promise<OpenChallenge[]> {
+  const response = await fetch(`${API_BASE_URL}/api/games/open`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: 'no-store', // Ensure fresh data for real-time game state
+  })
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch open challenges: ${response.statusText}`)
+  }
+
+  const result = await response.json()
+  return z.array(openChallengeSchema).parse(result)
 }

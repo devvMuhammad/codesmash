@@ -60,6 +60,7 @@ export const problemSchema = z.object({
   }),
   correctOutput: z.string(),
   testCases: z.string(),
+  totalTestCases: z.number(), // Calculated field from server
 })
 
 export type Problem = z.infer<typeof problemSchema>
@@ -77,6 +78,8 @@ export const gameDataSchema = z.object({
   challengerJoined: z.boolean(),
   hostCode: z.string(),
   challengerCode: z.string(),
+  hostTestsPassed: z.number().default(0),
+  challengerTestsPassed: z.number().default(0),
   result: gameResultSchema.optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -103,3 +106,43 @@ export const joinGameResponseSchema = z.object({
 
 export type JoinGameResponse = z.infer<typeof joinGameResponseSchema>
 export type PlayerRolesType = JoinGameResponse['role']
+
+// Live battles schema (in_progress games)
+export const liveBattleSchema = z.object({
+  _id: z.string(),
+  host: userSchema,
+  challenger: userSchema,
+  problem: z.object({
+    _id: z.string(),
+    title: z.string(),
+    difficulty: difficultySchema,
+  }),
+  status: gameStatusSchema,
+  timeLimit: z.number(),
+  difficulty: difficultySchema,
+  startedAt: z.string().optional(),
+  remainingSeconds: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
+
+export type LiveBattle = z.infer<typeof liveBattleSchema>
+
+// Open challenges schema (waiting games without challenger)
+export const openChallengeSchema = z.object({
+  _id: z.string(),
+  host: userSchema,
+  problem: z.object({
+    _id: z.string(),
+    title: z.string(),
+    difficulty: difficultySchema,
+  }).optional(),
+  inviteCode: z.string(),
+  status: gameStatusSchema,
+  timeLimit: z.number(),
+  difficulty: difficultySchema,
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
+
+export type OpenChallenge = z.infer<typeof openChallengeSchema>
