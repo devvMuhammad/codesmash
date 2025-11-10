@@ -105,6 +105,10 @@ export interface GameState {
 
   // Console output state
   consoleOutput: ConsoleOutput | null
+
+  // Test progress state
+  hostTestsPassed: number
+  challengerTestsPassed: number
 }
 
 export interface GameActions {
@@ -130,6 +134,11 @@ export interface GameActions {
   // Console output actions
   setConsoleOutput: (output: ConsoleOutput | null) => void
   clearConsoleOutput: () => void
+
+  // Test progress actions
+  setHostTestsPassed: (passed: number) => void
+  setChallengerTestsPassed: (passed: number) => void
+  updateTestProgress: (role: PlayerRolesType, passed: number) => void
 }
 
 export type GameStore = GameState & GameActions
@@ -147,7 +156,9 @@ export const defaultInitState: GameState = {
   isConnected: false,
   opponentConnected: false,
   selectedLanguage: SUPPORTED_LANGUAGES[0].name,
-  consoleOutput: null
+  consoleOutput: null,
+  hostTestsPassed: 0,
+  challengerTestsPassed: 0,
 }
 
 export const createGameStore = (
@@ -194,5 +205,20 @@ export const createGameStore = (
 
     clearConsoleOutput: () =>
       set({ consoleOutput: null }),
+
+    // Test progress actions
+    setHostTestsPassed: (passed: number) =>
+      set({ hostTestsPassed: passed }),
+
+    setChallengerTestsPassed: (passed: number) =>
+      set({ challengerTestsPassed: passed }),
+
+    updateTestProgress: (role: PlayerRolesType, passed: number) => {
+      if (role === 'host') {
+        set({ hostTestsPassed: passed })
+      } else if (role === 'challenger') {
+        set({ challengerTestsPassed: passed })
+      }
+    },
   }))
 }

@@ -49,11 +49,14 @@ CodeSmash is a real-time 1v1 coding platform built with Next.js 15, TypeScript, 
 // Server API endpoints this client integrates with
 POST /api/games              # Create new game
 GET  /api/games/:gameId      # Get single game details
+GET  /api/games/live         # Get live battles (in_progress games, limit 20)
+GET  /api/games/open         # Get open challenges (waiting games, limit 20)
 GET  /api/users/:userId/challenges  # Get user's challenges
 ```
 
 #### Integration Files
-- **`lib/api/game.ts`**: Server API client functions
+- **`lib/api/game.ts`**: Server API client functions for individual game operations
+- **`lib/api/games.ts`**: Server API client functions for lobby (live battles, open challenges)
 - **`lib/validations/game.ts`**: Zod schemas matching server types
 - **`lib/config.ts`**: Server endpoint configuration
 - **`context/websocket-context.tsx`**: Socket.IO client integration
@@ -490,3 +493,100 @@ export default function ProblemsLoading() {
   );
 }
 ```
+
+## Lobby Integration
+
+### Live Battles & Open Challenges
+
+The lobby page displays real-time data for ongoing battles and available challenges using Server-Side Rendering for optimal performance.
+
+#### Implementation Pattern
+
+**Server Component (`app/lobby/page.tsx`)**:
+```typescript
+export default async function LobbyPage() {
+  // Fetch data in parallel on the server
+  const [liveBattles, openChallenges] = await Promise.all([
+    getLiveBattles().catch(() => []),
+    getOpenChallenges().catch(() => []),
+  ])
+
+  return (
+    <div>
+      <OpenChallenges challenges={openChallenges} />
+      <LiveBattles battles={liveBattles} />
+    </div>
+  )
+}
+```
+
+**Client Components** (`components/lobby/`):
+- `LiveBattles` - Displays in_progress games with remaining time
+- `OpenChallenges` - Displays waiting games without challengers
+
+#### Data Fetching (`lib/api/games.ts`)
+
+```typescript
+// Fetches up to 20 live battles (in_progress games)
+export async function getLiveBattles(): Promise<LiveBattle[]>
+
+// Fetches up to 20 open challenges (waiting games without challenger)
+export async function getOpenChallenges(): Promise<OpenChallenge[]>
+```
+
+#### Type Validation (`lib/validations/game.ts`)
+
+```typescript
+// Live battle with populated host, challenger, and problem
+export const liveBattleSchema = z.object({
+  _id: z.string(),
+  host: userSchema,
+  challenger: userSchema,
+  problem: z.object({
+    _id: z.string(),
+    title: z.string(),
+    difficulty: difficultySchema,
+  }),
+  remainingSeconds: z.number(), // Calculated server-side
+  // ... other fields
+})
+
+// Open challenge with populated host and problem
+export const openChallengeSchema = z.object({
+  _id: z.string(),
+  host: userSchema,
+  problem: z.object({
+    _id: z.string(),
+    title: z.string(),
+    difficulty: difficultySchema,
+  }).optional(),
+  inviteCode: z.string(),
+  // ... other fields
+})
+```
+
+#### Time Formatting Utilities (`lib/date-utils.ts`)
+
+```typescript
+// Calculate remaining time from startedAt and timeLimit
+calculateRemainingTime(startedAt: Date, timeLimit: number): number
+
+// Format seconds as "MM:SS"
+formatTimeRemaining(seconds: number): string
+
+// Format timestamp as "X min ago"
+formatTimeAgo(date: Date): string
+```
+
+#### Loading States
+
+The lobby page includes a comprehensive skeleton loader (`app/lobby/loading.tsx`) that matches the exact layout of both the live battles grid and open challenges list.
+
+#### Features
+
+- **Hardcoded Aura Points**: Consistent pseudo-random aura generation based on username
+- **Remaining Time Display**: Live battles show countdown timer (MM:SS format)
+- **Time Since Creation**: Open challenges show "X min ago" relative timestamps
+- **Pagination Limit**: Both endpoints limited to 20 most recent results
+- **Error Handling**: Graceful fallback to empty arrays if API calls fail
+- **SEO Optimization**: Proper metadata export for Lobby page

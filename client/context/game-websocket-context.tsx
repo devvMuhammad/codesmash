@@ -50,6 +50,8 @@ export function GameWebSocketProvider({
   const setGameStatus = useGameStore((state) => state.setGameStatus)
   const setOpponentCode = useGameStore((state) => state.setOpponentCode)
   const setGameResult = useGameStore((state) => state.setGameResult)
+  const setHostTestsPassed = useGameStore((state) => state.setHostTestsPassed)
+  const setChallengerTestsPassed = useGameStore((state) => state.setChallengerTestsPassed)
 
   // Socket connection initialization
   useEffect(() => {
@@ -161,6 +163,32 @@ export function GameWebSocketProvider({
       }
     })
 
+    // Test progress events
+    socket.on("test_progress_update", (data: {
+      role: PlayerRolesType
+      passedTests: number
+      totalTests: number
+      previousPassed: number
+      allTestsPassed: boolean
+    }) => {
+      console.log("Test progress update:", data)
+
+      // Update store based on role
+      if (data.role === 'host') {
+        setHostTestsPassed(data.passedTests)
+      } else {
+        setChallengerTestsPassed(data.passedTests)
+      }
+
+      // Show toast only for opponent progress
+      if (data.role !== userRole) {
+        toast.info(`Opponent passed ${data.passedTests}/${data.totalTests} tests`, {
+          description: `+${data.passedTests - data.previousPassed} tests`,
+          duration: 3000
+        })
+      }
+    })
+
     // Game end events
     socket.on("game_finished", (data: { result: { reason: "completed" | "forfeit" | "time_up", winner: string, message: string }, gameStatus: string }) => {
       console.log("Game finished:", data)
@@ -198,7 +226,7 @@ export function GameWebSocketProvider({
     return () => {
       socket.disconnect()
     }
-  }, [gameId, userRole, user, setConnected, setOpponentConnected, setOpponentData, setGameStatus, setOpponentCode, setGameResult])
+  }, [gameId, userRole, user, setConnected, setOpponentConnected, setOpponentData, setGameStatus, setOpponentCode, setGameResult, setHostTestsPassed, setChallengerTestsPassed])
 
   // Named emit functions
   const sendCodeUpdate = useCallback((code: string) => {

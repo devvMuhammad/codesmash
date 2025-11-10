@@ -8,6 +8,7 @@ import { useGameStore } from "@/providers/game-store-provider"
 import { Session } from "@/lib/auth-client"
 import Image from "next/image"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
 interface GameResultPanelProps {
   user: Session["user"] | null
@@ -15,8 +16,25 @@ interface GameResultPanelProps {
 
 export function GameResultPanel({ user }: GameResultPanelProps) {
   const gameResult = useGameStore((state) => state.gameResult)
+  const gameStatus = useGameStore((state) => state.gameStatus)
   const currentPlayerData = useGameStore((state) => state.currentPlayerData)
   const opponentData = useGameStore((state) => state.opponentData)
+  const [showResult, setShowResult] = useState(false)
+
+  // Add 500ms delay before showing result panel to let progress bar animate
+  useEffect(() => {
+    if (gameResult && gameStatus === 'completed') {
+      const timer = setTimeout(() => {
+        setShowResult(true)
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [gameResult, gameStatus])
+
+  // Only render panel if showResult is true
+  if (!showResult) {
+    return null
+  }
 
   if (!gameResult) {
     return (
