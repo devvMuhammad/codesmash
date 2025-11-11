@@ -29,19 +29,16 @@ export function BattleClientContent({ gameData, joinResult, user }: BattleClient
   const showDuplicateModal = joinResult.success === false && joinResult.role === 'spectator' && joinResult.message.includes('already joined as challenger')
 
   // Show game result panel if game is completed
-  if (gameStatus === 'completed' || joinResult.message.includes('finished')) {
-    console.log("showing game result panel", gameData)
+  if (gameStatus === 'completed') {
     return (
-      <>
-        <div className="h-screen flex flex-col bg-background overflow-hidden">
-          <DuplicateChallenger display={showDuplicateModal} />
-          <BattleNavbar
-            gameId={gameData._id}
-            inviteCode={gameData.inviteCode}
-          />
-          <GameResultPanel user={user} />
-        </div>
-      </>
+      <div className="h-screen flex flex-col bg-background overflow-hidden">
+        <DuplicateChallenger display={showDuplicateModal} />
+        <BattleNavbar
+          gameId={gameData._id}
+          inviteCode={gameData.inviteCode}
+        />
+        <GameResultPanel user={user} />
+      </div>
     )
   }
 

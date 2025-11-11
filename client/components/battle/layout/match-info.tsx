@@ -1,20 +1,17 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge"
-import { Timer } from "lucide-react"
-import { formatTime } from "@/lib/date-utils"
 import { useGameStore } from "@/providers/game-store-provider"
 import { useShallow } from 'zustand/react/shallow'
+import { BattleTimer } from "./battle-timer"
 
 export function MatchInfo() {
   const {
-    timeRemaining,
     isConnected,
     opponentConnected,
     opponentName,
   } = useGameStore(
     useShallow((state) => ({
-      timeRemaining: state.timeRemaining,
       isConnected: state.isConnected,
       opponentConnected: state.opponentConnected,
       opponentName: state.opponentData?.name,
@@ -23,12 +20,7 @@ export function MatchInfo() {
 
   return (
     <div className="flex items-center gap-6">
-      <div className="flex items-center gap-2">
-        <Timer className="h-4 w-4 text-blue-400" />
-        <span className="font-mono text-lg font-semibold text-blue-400">
-          {formatTime(timeRemaining)}
-        </span>
-      </div>
+      <BattleTimer />
 
       <div className="flex items-center gap-3">
         <Badge

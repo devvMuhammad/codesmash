@@ -26,14 +26,13 @@ export default async function DuelPage({ params, searchParams }: DuelPageProps) 
   const { inviteCode } = await searchParams
 
   if (!gameId) {
-    notFound()
+    redirect("/lobby")
   }
 
-  // Get current user session
   const session = await getSessionServerSide()
+
   if (!session?.user?.id) {
-    // Redirect to login or handle unauthenticated user
-    notFound()
+    redirect("/login")
   }
 
   let joinResult: JoinGameResponse | null = null
@@ -55,7 +54,6 @@ export default async function DuelPage({ params, searchParams }: DuelPageProps) 
   }
 
   const gameData = await getGameById(gameId)
-  // console.log(joinResult?.role !== "host" ? joinResult : "host joined the game")
 
   return (
     <GameStoreProvider

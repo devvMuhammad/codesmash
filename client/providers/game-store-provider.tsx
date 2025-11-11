@@ -51,7 +51,7 @@ export const GameStoreProvider = ({
       currentPlayerData,
       opponentData,
       gameStatus: gameData.status,
-      timeRemaining: gameData.timeLimit * 60, // Convert minutes to seconds
+      timeRemaining: gameData.timeRemaining,
       currentPlayerCode: userRole === "host"
         ? gameData.hostCode || ""
         : gameData.challengerCode || "",

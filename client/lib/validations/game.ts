@@ -81,6 +81,9 @@ export const gameDataSchema = z.object({
   hostTestsPassed: z.number().default(0),
   challengerTestsPassed: z.number().default(0),
   result: gameResultSchema.optional(),
+  startedAt: z.string().optional(),
+  completedAt: z.string().optional(),
+  timeRemaining: z.number(), // Calculated remaining time in seconds
   createdAt: z.string(),
   updatedAt: z.string(),
   // Populated user data from MongoDB
