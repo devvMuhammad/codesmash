@@ -59,7 +59,7 @@ export function GameResultPanel({ user }: GameResultPanelProps) {
   }
 
   const getResultColor = () => {
-    if (isDraw) return "text-muted-foreground"
+    if (isDraw) return "text-yellow-400"
     if (isWinner) return "text-green-400"
     return "text-red-400"
   }
@@ -85,7 +85,7 @@ export function GameResultPanel({ user }: GameResultPanelProps) {
             {getResultIcon()}
           </div>
           <CardTitle className="text-3xl font-bold">{getResultTitle()}</CardTitle>
-          <Badge variant={getResultBadgeVariant()} className="mx-auto mt-2">
+          <Badge variant={getResultBadgeVariant()} className={`mx-auto mt-2 ${isDraw ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/50' : ''}`}>
             {gameResult.reason === 'forfeit' && 'Game Forfeited'}
             {gameResult.reason === 'time_up' && 'Time\'s Up'}
             {gameResult.reason === 'completed' && 'Game Completed'}
@@ -101,7 +101,7 @@ export function GameResultPanel({ user }: GameResultPanelProps) {
           {/* Player Summary */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Current Player (Left Side) */}
-            <div className={`p-4 rounded-lg border ${currentPlayerWon && !isDraw ? 'border-green-500 bg-green-500/10' : 'border-border'}`}>
+            <div className={`p-4 rounded-lg border ${isDraw ? 'border-yellow-500/50 bg-yellow-500/5' : currentPlayerWon ? 'border-green-500 bg-green-500/10' : 'border-border'}`}>
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
                   {currentPlayerData?.image ? (
@@ -123,7 +123,7 @@ export function GameResultPanel({ user }: GameResultPanelProps) {
             </div>
 
             {/* Opponent (Right Side) */}
-            <div className={`p-4 rounded-lg border ${opponentWon && !isDraw ? 'border-green-500 bg-green-500/10' : 'border-border'}`}>
+            <div className={`p-4 rounded-lg border ${isDraw ? 'border-yellow-500/50 bg-yellow-500/5' : opponentWon ? 'border-green-500 bg-green-500/10' : 'border-border'}`}>
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
                   {opponentData?.image ? (
