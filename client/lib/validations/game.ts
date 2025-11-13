@@ -31,7 +31,7 @@ const gameResultReasons = ["forfeit", "time_up", "completed"] as const
 
 export const gameResultSchema = z.object({
   reason: z.enum(gameResultReasons),
-  winner: z.string(),
+  winner: z.string().optional(), // undefined for draws
   message: z.string(),
 })
 

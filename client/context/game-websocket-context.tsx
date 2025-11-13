@@ -52,7 +52,7 @@ export function GameWebSocketProvider({
   const setGameResult = useGameStore((state) => state.setGameResult)
   const setHostTestsPassed = useGameStore((state) => state.setHostTestsPassed)
   const setChallengerTestsPassed = useGameStore((state) => state.setChallengerTestsPassed)
-
+  const setTimeRemaining = useGameStore((state) => state.setTimeRemaining)
   // Socket connection initialization
   useEffect(() => {
     if (!gameId || !userRole) return
@@ -190,7 +190,7 @@ export function GameWebSocketProvider({
     })
 
     // Game end events
-    socket.on("game_finished", (data: { result: { reason: "completed" | "forfeit" | "time_up", winner: string, message: string }, gameStatus: string }) => {
+    socket.on("game_finished", (data: { result: { reason: "completed" | "forfeit" | "time_up", winner?: string, message: string }, gameStatus: string }) => {
       console.log("Game finished:", data)
 
       // Update game status to completed
@@ -206,11 +206,14 @@ export function GameWebSocketProvider({
       })
     })
 
-    socket.on("game_time_expired", (data: { gameId: string, result: { reason: "time_up", winner: string, message: string }, completedAt: Date, status: string }) => {
+    socket.on("game_time_expired", (data: { gameId: string, result: { reason: "time_up", winner?: string, message: string }, completedAt: Date, status: string }) => {
       console.log("Game time expired:", data)
 
       // Update game status to completed
       setGameStatus("completed")
+
+      // set time remaining to 0
+      setTimeRemaining(0)
 
       // Store the game result
       setGameResult(data.result)

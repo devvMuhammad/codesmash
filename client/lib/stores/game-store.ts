@@ -5,7 +5,7 @@ import type { TestResult } from '@/types/problem'
 
 export interface GameResult {
   reason: 'forfeit' | 'time_up' | 'completed'
-  winner: string
+  winner?: string // undefined for draws
   message: string
 }
 
@@ -139,6 +139,8 @@ export interface GameActions {
   setHostTestsPassed: (passed: number) => void
   setChallengerTestsPassed: (passed: number) => void
   updateTestProgress: (role: PlayerRolesType, passed: number) => void
+  // used to set time remaining to 0 when game is finished
+  setTimeRemaining: (remaining: number) => void
 }
 
 export type GameStore = GameState & GameActions
@@ -212,6 +214,9 @@ export const createGameStore = (
 
     setChallengerTestsPassed: (passed: number) =>
       set({ challengerTestsPassed: passed }),
+
+    setTimeRemaining: (remaining: number) =>
+      set({ timeRemaining: remaining }),
 
     updateTestProgress: (role: PlayerRolesType, passed: number) => {
       if (role === 'host') {
