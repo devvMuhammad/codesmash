@@ -150,8 +150,8 @@ socket.on("game_time_expired", (data: {
   gameId: string
   result: {
     reason: "time_up"
-    winner: string
-    message: string
+    winner?: string  // userId of winner, undefined for draws
+    message: string  // Includes test case comparison details
   }
   completedAt: Date
   status: "completed"
@@ -180,8 +180,10 @@ socket.emit("request_time_remaining")
 
 **Key Features:**
 - Automatic game end when time expires
+- Winner determined by test cases passed (or draw if equal)
 - Toast notification on expiration
 - Updates game store with completion result
+- Draw results displayed with yellowish text/borders in UI (`text-yellow-400`, `border-yellow-500/50`)
 - Optional periodic sync to prevent timer drift
 
 For detailed timer architecture, see `../CLAUDE.md` → "Game Timer System" section.
