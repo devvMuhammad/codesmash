@@ -86,8 +86,13 @@ export async function getLiveBattles(): Promise<LiveBattle[]> {
   return z.array(liveBattleSchema).parse(result)
 }
 
-export async function getOpenChallenges(): Promise<OpenChallenge[]> {
-  const response = await fetch(`${API_BASE_URL}/api/games/open`, {
+export async function getOpenChallenges(userId: string | undefined): Promise<OpenChallenge[]> {
+  const url = new URL(`${API_BASE_URL}/api/games/open`)
+  if (userId) {
+    url.searchParams.append('userId', userId)
+  }
+
+  const response = await fetch(url.toString(), {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

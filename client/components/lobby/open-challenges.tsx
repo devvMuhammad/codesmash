@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import type { OpenChallenge } from "@/lib/validations/game"
 import { formatTimeAgo } from "@/lib/date-utils"
 import Link from "next/link"
+import { generateInviteLink } from "@/lib/utils"
 
 interface OpenChallengesProps {
   challenges: OpenChallenge[]
@@ -72,13 +73,14 @@ export function OpenChallenges({ challenges }: OpenChallengesProps) {
                     </div>
 
                     {/* Challenge Button */}
-                    <Link href={`/battle/${challenge._id}?invite=${challenge.inviteCode}`}>
+
+                    <Link href={generateInviteLink(challenge.inviteCode, challenge._id)}>
                       <Button
                         className="hover:shadow-lg hover:shadow-primary/30 transition-all duration-200 hover:scale-105"
                         size="lg"
                       >
                         <Swords className="h-4 w-4 mr-2" />
-                        Challenge
+                        Join
                       </Button>
                     </Link>
                   </div>

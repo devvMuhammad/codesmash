@@ -5,6 +5,7 @@ import { LiveBattles } from "@/components/lobby/live-battles"
 import { OpenChallenges } from "@/components/lobby/open-challenges"
 import { getLiveBattles, getOpenChallenges } from "@/lib/api/games"
 import type { Metadata } from "next"
+import { getSessionServerSide } from "@/lib/api/user"
 
 export const metadata: Metadata = {
   title: "Lobby",
@@ -12,11 +13,14 @@ export const metadata: Metadata = {
 }
 
 export default async function LobbyPage() {
-  // Fetch data in parallel
+
+  const userId = (await getSessionServerSide())?.user.id
   const [liveBattles, openChallenges] = await Promise.all([
-    getLiveBattles().catch(() => []),
-    getOpenChallenges().catch(() => []),
+    getLiveBattles(),
+    getOpenChallenges(userId),
   ])
+
+  console.log("live", liveBattles)
 
   return (
     <div className="min-h-screen bg-background">

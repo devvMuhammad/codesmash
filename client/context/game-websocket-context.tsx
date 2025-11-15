@@ -184,7 +184,7 @@ export function GameWebSocketProvider({
       if (data.role !== userRole) {
         toast.info(`Opponent passed ${data.passedTests}/${data.totalTests} tests`, {
           description: `+${data.passedTests - data.previousPassed} tests`,
-          duration: 3000
+          duration: 3000,
         })
       }
     })
@@ -229,7 +229,7 @@ export function GameWebSocketProvider({
     return () => {
       socket.disconnect()
     }
-  }, [gameId, userRole, user, setConnected, setOpponentConnected, setOpponentData, setGameStatus, setOpponentCode, setGameResult, setHostTestsPassed, setChallengerTestsPassed])
+  }, [gameId, userRole, user, setConnected, setOpponentConnected, setOpponentData, setGameStatus, setOpponentCode, setGameResult, setHostTestsPassed, setChallengerTestsPassed, setTimeRemaining])
 
   // Named emit functions
   const sendCodeUpdate = useCallback((code: string) => {
