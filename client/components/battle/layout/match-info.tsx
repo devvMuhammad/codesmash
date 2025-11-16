@@ -20,7 +20,6 @@ export function MatchInfo() {
 
   return (
     <div className="flex items-center gap-6">
-      <BattleTimer />
 
       <div className="flex items-center gap-3">
         <Badge

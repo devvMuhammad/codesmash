@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { CopyButton } from "@/components/ui/copy-button"
-import { Clock, Trophy } from "lucide-react"
+import { Clock, Trophy, AlertCircle } from "lucide-react"
 import { GameData, JoinGameResponse } from "@/lib/validations/game"
 import { useSession } from "@/lib/auth-client"
 import { formatTimeLimit } from "@/lib/date-utils"
-import { generateInviteLink, getUserInitials } from "@/lib/utils"
+import { generateInviteLink, getUserInitials, getDifficultyStyles, getTimeLimitStyles, getRoleStyles } from "@/lib/utils"
 import { useGame } from "@/context/game-websocket-context"
 
 interface PreGameContentProps {
@@ -49,8 +49,10 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
 
   return (
     <div className="h-full flex items-center justify-center p-8">
-      <div className="w-full max-w-2xl space-y-2">
-        <p className="text-muted-foreground text-center">Joined as {userRole}</p>
+      <div className="w-full max-w-2xl space-y-4">
+        <p className="text-center text-base">
+          Joined as <span className={getRoleStyles(userRole)}>{userRole}</span>
+        </p>
         {/* Main Card */}
         <Card>
           <CardHeader className="text-center pb-4">
@@ -59,14 +61,14 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
               <div className="flex items-center gap-2">
                 <Trophy className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Difficulty:</span>
-                <Badge variant="outline" className="capitalize">
+                <Badge variant="outline" className={`capitalize ${getDifficultyStyles(gameData.difficulty)}`}>
                   {gameData.difficulty}
                 </Badge>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Time Limit:</span>
-                <Badge variant="outline">
+                <Badge variant="outline" className={getTimeLimitStyles(gameData.timeLimit)}>
                   {formatTimeLimit(gameData.timeLimit)}
                 </Badge>
               </div>
@@ -76,23 +78,25 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
           <CardContent>
             {/* Status Messages */}
             {isChallenger && (
-              <div className="text-center mb-6">
-                <Badge variant="secondary">
+              <div className="flex items-center justify-center gap-3 mb-6 bg-blue-500/10 border border-blue-500/30 rounded-lg py-4 px-6">
+                <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 shrink-0" />
+                <p className="text-base font-medium text-blue-700 dark:text-blue-300">
                   {gameStatus === 'waiting'
                     ? (bothPlayersJoined ? 'Waiting for host to start' : 'Waiting for all players to join')
                     : gameStatus === 'ready_to_start'
-                    ? 'Host has started the battle - Mark yourself as ready!'
-                    : 'Game in progress'
+                      ? 'Host has started the battle - Mark yourself as ready!'
+                      : 'Game in progress'
                   }
-                </Badge>
+                </p>
               </div>
             )}
 
             {isHost && gameStatus === 'ready_to_start' && (
-              <div className="text-center mb-6">
-                <Badge variant="secondary">
+              <div className="flex items-center justify-center gap-3 mb-6 bg-amber-500/10 border border-amber-500/30 rounded-lg py-4 px-6">
+                <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0" />
+                <p className="text-base font-medium text-amber-700 dark:text-amber-300">
                   Waiting for challenger to get ready...
-                </Badge>
+                </p>
               </div>
             )}
 
