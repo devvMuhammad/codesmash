@@ -112,7 +112,7 @@ class WebSocketService {
       this.updateStore({ isConnected: true })
     } else {
       this.updateStore({ opponentConnected: true })
-      toast(`${data.user.name} has joined the game!`, {
+      toast.success(`${data.user.name} has joined the game!`, {
         description: "Get Ready to Battle!"
       })
     }
@@ -126,7 +126,7 @@ class WebSocketService {
       this.updateStore({ isConnected: false })
     } else {
       this.updateStore({ opponentConnected: false })
-      toast("Opponent has left the game", {
+      toast.error("Opponent has left the game", {
         description: "Waiting for them to reconnect..."
       })
     }
@@ -143,11 +143,11 @@ class WebSocketService {
     this.updateStore({ gameStatus: data.status })
 
     if (data.status === "in_progress") {
-      toast("Game started!", {
+      toast.success("Game started!", {
         description: "Good luck!"
       })
     } else if (data.status === "completed") {
-      toast("Game completed!", {
+      toast.info("Game completed!", {
         description: "Check the results!"
       })
     }

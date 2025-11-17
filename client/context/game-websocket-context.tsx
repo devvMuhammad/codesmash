@@ -53,6 +53,7 @@ export function GameWebSocketProvider({
   const setHostTestsPassed = useGameStore((state) => state.setHostTestsPassed)
   const setChallengerTestsPassed = useGameStore((state) => state.setChallengerTestsPassed)
   const setTimeRemaining = useGameStore((state) => state.setTimeRemaining)
+
   // Socket connection initialization
   useEffect(() => {
     if (!gameId || !userRole) return
@@ -121,7 +122,7 @@ export function GameWebSocketProvider({
       setOpponentConnected(false)
       setOpponentData(null)
 
-      toast.info(`${data.user.name} has left the game`, {
+      toast.warning(`${data.user.name} has left the game`, {
         description: `${data.user.name} has quit. Waiting for someone else to join...`,
         duration: 3000,
       })
@@ -134,9 +135,10 @@ export function GameWebSocketProvider({
       setGameStatus("ready_to_start")
 
       if (userRole === "challenger") {
-        toast.success(`${data.user.name} has started the battle!`, {
+        toast(`${data.user.name} has started the battle!`, {
           description: "Mark yourself as ready when you're prepared to begin.",
           duration: 4000,
+          className: "!bg-purple-600 !text-white border-purple-700",
         })
       }
     })
@@ -182,9 +184,10 @@ export function GameWebSocketProvider({
 
       // Show toast only for opponent progress
       if (data.role !== userRole) {
-        toast.info(`Opponent passed ${data.passedTests}/${data.totalTests} tests`, {
+        toast(`Opponent passed ${data.passedTests}/${data.totalTests} tests`, {
           description: `+${data.passedTests - data.previousPassed} tests`,
           duration: 3000,
+          className: "!bg-purple-600 !text-white border-purple-700",
         })
       }
     })
@@ -199,11 +202,19 @@ export function GameWebSocketProvider({
       // Store the game result
       setGameResult(data.result)
 
-      // Show result notification
-      toast.info("Game Finished", {
-        description: data.result.message,
-        duration: 5000,
-      })
+      // Show result notification based on winner
+      const isWinner = data.result.winner === user?.id
+      if (isWinner) {
+        toast.success("Game Finished - You Won! 🎉", {
+          description: data.result.message,
+          duration: 5000,
+        })
+      } else {
+        toast.error("Game Finished", {
+          description: data.result.message,
+          duration: 5000,
+        })
+      }
     })
 
     socket.on("game_time_expired", (data: { gameId: string, result: { reason: "time_up", winner?: string, message: string }, completedAt: Date, status: string }) => {
