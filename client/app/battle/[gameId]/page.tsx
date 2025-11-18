@@ -1,7 +1,6 @@
-import { notFound, redirect } from "next/navigation"
+import { redirect } from "next/navigation"
 import { getGameById, joinGame } from "@/lib/api/game"
 import { BattleClientContent } from "@/components/battle/battle-client"
-import type { JoinGameResponse } from "@/lib/validations/game"
 import { getSessionServerSide } from "@/lib/api/user"
 import { GameWebSocketProvider } from "@/context/game-websocket-context"
 import { GameStoreProvider } from "@/providers/game-store-provider"
@@ -32,27 +31,14 @@ export default async function DuelPage({ params, searchParams }: DuelPageProps) 
   const session = await getSessionServerSide()
 
   if (!session?.user?.id) {
-    redirect("/login")
+    redirect("/auth/login")
   }
 
-  let joinResult: JoinGameResponse | null = null
-
-  try {
-    joinResult = await joinGame({
-      gameId,
-      userId: session.user.id,
-      inviteCode
-    })
-  } catch (error) {
-    console.error("Failed to join game:", error)
-    // fallback to spectator role
-    joinResult = {
-      success: false,
-      role: "spectator",
-      message: "Failed to join game"
-    }
-  }
-
+  const joinResult = await joinGame({
+    gameId,
+    userId: session.user.id,
+    inviteCode
+  })
   const gameData = await getGameById(gameId)
 
   return (

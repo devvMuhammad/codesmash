@@ -48,7 +48,7 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
 
 
   return (
-    <div className="h-full flex items-center justify-center p-8">
+    <div className="h-full w-full flex items-center justify-center p-8">
       <div className="w-full max-w-2xl space-y-4">
         <p className="text-center text-base">
           Joined as <span className={getRoleStyles(userRole)}>{userRole}</span>

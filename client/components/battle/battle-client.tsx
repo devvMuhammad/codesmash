@@ -50,38 +50,41 @@ export function BattleClientContent({ gameData, joinResult, user }: BattleClient
         inviteCode={gameData.inviteCode}
       />
       <div className="flex-1 flex min-h-0">
-        <PanelGroup direction="horizontal">
-          <ProblemDescription
-            collapsed={problemSidebarCollapsed}
-            onCollapse={setProblemSidebarCollapsed}
-          />
-          <Panel>
-            <PanelGroup direction="vertical">
-              <Panel defaultSize={consoleCollapsed ? 100 : 70}>
-                {gameStatus === 'waiting' || gameStatus === 'ready_to_start' ? (
-                  <PreGameContent gameData={gameData} joinResult={joinResult} />
-                ) : (
-                  <PanelGroup direction="horizontal">
-                    <CurrentPlayerPanel
-                      collapsed={opponentEditorCollapsed}
-                      gameId={gameData._id}
+        {
+          gameStatus === 'waiting' || gameStatus === 'ready_to_start' ? (
+            <PreGameContent gameData={gameData} joinResult={joinResult} />) :
+            <PanelGroup direction="horizontal">
+              <ProblemDescription
+                collapsed={problemSidebarCollapsed}
+                onCollapse={setProblemSidebarCollapsed}
+              />
+              <Panel>
+                <PanelGroup direction="vertical">
+                  <Panel defaultSize={consoleCollapsed ? 100 : 70}>
+
+                    <PanelGroup direction="horizontal">
+                      <CurrentPlayerPanel
+                        collapsed={opponentEditorCollapsed}
+                        gameId={gameData._id}
+                      />
+                      <OpponentPanel
+                        collapsed={opponentEditorCollapsed}
+                        onCollapse={setOpponentEditorCollapsed}
+                      />
+                    </PanelGroup>
+
+                  </Panel>
+                  {gameStatus === "in_progress" && (
+                    <ConsolePanel
+                      collapsed={consoleCollapsed}
+                      onCollapse={setConsoleCollapsed}
                     />
-                    <OpponentPanel
-                      collapsed={opponentEditorCollapsed}
-                      onCollapse={setOpponentEditorCollapsed}
-                    />
-                  </PanelGroup>
-                )}
+                  )}
+                </PanelGroup>
               </Panel>
-              {gameStatus !== 'waiting' && gameStatus !== 'ready_to_start' && (
-                <ConsolePanel
-                  collapsed={consoleCollapsed}
-                  onCollapse={setConsoleCollapsed}
-                />
-              )}
             </PanelGroup>
-          </Panel>
-        </PanelGroup>
+        }
+
       </div>
     </div>
   )

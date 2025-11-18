@@ -22,14 +22,24 @@ export async function getGameById(gameId: string): Promise<GameData> {
 }
 
 export async function joinGame(joinRequest: Omit<JoinGameRequest, "inviteCode"> & { inviteCode?: string }): Promise<JoinGameResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/games/join`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(joinRequest),
-  })
+  try {
 
-  const result = await response.json()
-  return joinGameResponseSchema.parse(result)
+    const response = await fetch(`${API_BASE_URL}/api/games/join`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(joinRequest),
+    })
+
+    const result = await response.json()
+    return joinGameResponseSchema.parse(result)
+  } catch (error) {
+    console.error("Failed to join game:", error)
+    return {
+      success: false,
+      role: "spectator",
+      message: error instanceof Error ? error.message : "Failed to join game"
+    }
+  }
 }

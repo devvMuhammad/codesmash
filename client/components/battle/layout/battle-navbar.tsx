@@ -1,7 +1,4 @@
 "use client"
-
-import { Button } from "@/components/ui/button"
-import { Settings } from "lucide-react"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { InviteDropdown } from "../dialogs/invite-dropdown"
 import { ForfeitGameDialog } from "../dialogs/forfeit-game-dialog"
@@ -10,6 +7,7 @@ import { MatchInfo } from "./match-info"
 import { RunCode } from "../controls/run-code"
 import { SubmitCode } from "../controls/submit-code"
 import { BattleTimer } from "./battle-timer"
+import { useGameStore } from "@/providers/game-store-provider"
 
 interface BattleNavbarProps {
   gameId?: string
@@ -17,6 +15,9 @@ interface BattleNavbarProps {
 }
 
 export function BattleNavbar({ gameId, inviteCode }: BattleNavbarProps) {
+
+  const gameStatus = useGameStore(state => state.gameStatus)
+
   return (
     <nav className="h-14 border-b border-border/40 flex items-center justify-between px-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <BattleTimer />
@@ -32,12 +33,16 @@ export function BattleNavbar({ gameId, inviteCode }: BattleNavbarProps) {
             inviteCode={inviteCode}
           />
         )}
-        <RunCode />
-        <SubmitCode />
+        {gameStatus === "in_progress" && (
+          <>
+            <RunCode />
+            <SubmitCode />
+          </>
+        )}
         <ThemeSwitcher />
-        <Button variant="ghost" size="sm">
+        {/* <Button variant="ghost" size="sm">
           <Settings className="h-4 w-4" />
-        </Button>
+        </Button> */}
         <ForfeitGameDialog />
         <UserProfile />
       </div>
