@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { getGameById, joinGame } from "@/lib/api/game"
-import { BattleClientContent } from "@/components/battle/battle-client"
+import { BattleClient } from "@/components/battle/battle-client"
 import { getSessionServerSide } from "@/lib/api/user"
 import { GameWebSocketProvider } from "@/context/game-websocket-context"
 import { GameStoreProvider } from "@/providers/game-store-provider"
@@ -52,7 +52,7 @@ export default async function DuelPage({ params, searchParams }: DuelPageProps) 
         userRole={joinResult.role}
         user={session.user}
       >
-        <BattleClientContent gameData={gameData} joinResult={joinResult} user={session.user} />
+        <BattleClient gameData={gameData} joinResult={joinResult} user={session.user} />
       </GameWebSocketProvider>
     </GameStoreProvider>
   )

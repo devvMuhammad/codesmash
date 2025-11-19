@@ -20,7 +20,7 @@ interface BattleClientContentProps {
   user: Session["user"] | null
 }
 
-export function BattleClientContent({ gameData, joinResult, user }: BattleClientContentProps) {
+export function BattleClient({ gameData, joinResult, user }: BattleClientContentProps) {
   const [problemSidebarCollapsed, setProblemSidebarCollapsed] = useState(false)
   const [consoleCollapsed, setConsoleCollapsed] = useState(false)
   const [opponentEditorCollapsed, setOpponentEditorCollapsed] = useState(false)
