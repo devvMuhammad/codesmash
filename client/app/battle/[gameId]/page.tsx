@@ -30,13 +30,9 @@ export default async function DuelPage({ params, searchParams }: DuelPageProps) 
 
   const session = await getSessionServerSide()
 
-  if (!session?.user?.id) {
-    redirect("/auth/login")
-  }
-
   const joinResult = await joinGame({
     gameId,
-    userId: session.user.id,
+    userId: session?.user.id,
     inviteCode
   })
   const gameData = await getGameById(gameId)
@@ -45,14 +41,15 @@ export default async function DuelPage({ params, searchParams }: DuelPageProps) 
     <GameStoreProvider
       gameData={gameData}
       userRole={joinResult.role}
-      user={session.user}
+      user={session?.user || null}
     >
       <GameWebSocketProvider
         gameId={gameId}
         userRole={joinResult.role}
-        user={session.user}
+        user={session?.user || null}
+        gameOver={gameData.status === 'completed'}
       >
-        <BattleClient gameData={gameData} joinResult={joinResult} user={session.user} />
+        <BattleClient gameData={gameData} joinResult={joinResult} user={session?.user || null} />
       </GameWebSocketProvider>
     </GameStoreProvider>
   )
