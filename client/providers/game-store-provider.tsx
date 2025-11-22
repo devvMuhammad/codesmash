@@ -29,21 +29,37 @@ export const GameStoreProvider = ({
   children,
   gameData,
   userRole,
-  user,
 }: GameStoreProviderProps) => {
   const storeRef = useRef<GameStoreApi | null>(null)
 
   if (storeRef.current === null) {
-    // Extract current player and opponent data
-    const currentPlayerData: User | null = user ? {
-      _id: user.id,
-      name: user.name,
-      email: user.email,
-      image: user.image || undefined,
-    } : null
+    /**
+     * Current player data
+     * if you are participant, then its you
+     * if host, then current player data refers to the host
+     */
+    let currentPlayerData: User | null;
+    if (userRole === "host") {
+      currentPlayerData = gameData.host || null
+    } else if (userRole === "challenger") {
+      currentPlayerData = gameData.challenger || null
+    } else {
+      currentPlayerData = gameData.host
+    }
 
-    const opponentData: User | null =
-      userRole === "host" ? gameData.challenger || null : gameData.host || null
+    /**
+     * Opponent data
+     * if you are participant, then its your opponent, if host then game.challenger, if challener then game.host
+     * if you are spectator, then its game.challenger
+     */
+    let opponentData: User | null;
+    if (userRole === "host") {
+      opponentData = gameData.challenger || null
+    } else if (userRole === "challenger") {
+      opponentData = gameData.host || null
+    } else {
+      opponentData = gameData.challenger || null
+    }
 
     const initState: GameState = {
       ...defaultInitState,

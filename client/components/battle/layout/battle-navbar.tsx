@@ -10,13 +10,14 @@ import { BattleTimer } from "./battle-timer"
 import { useGameStore } from "@/providers/game-store-provider"
 
 interface BattleNavbarProps {
-  gameId?: string
-  inviteCode?: string
+  gameId: string
+  inviteCode: string
 }
 
 export function BattleNavbar({ gameId, inviteCode }: BattleNavbarProps) {
 
   const gameStatus = useGameStore(state => state.gameStatus)
+  const userRole = useGameStore(state => state.userRole)
 
   return (
     <nav className="h-14 border-b border-border/40 flex items-center justify-between px-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -27,23 +28,23 @@ export function BattleNavbar({ gameId, inviteCode }: BattleNavbarProps) {
       <MatchInfo />
 
       <div className="flex items-center gap-2">
-        {gameId && inviteCode && (
+        {gameStatus !== 'completed' && (
           <InviteDropdown
             gameId={gameId}
             inviteCode={inviteCode}
           />
         )}
-        {gameStatus === "in_progress" && (
+        {gameStatus === "in_progress" && userRole !== 'spectator' && (
           <>
             <RunCode />
             <SubmitCode />
+            <ForfeitGameDialog />
           </>
         )}
         <ThemeSwitcher />
         {/* <Button variant="ghost" size="sm">
           <Settings className="h-4 w-4" />
-        </Button> */}
-        <ForfeitGameDialog />
+          </Button> */}
         <UserProfile />
       </div>
     </nav>

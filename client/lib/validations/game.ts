@@ -87,7 +87,7 @@ export const gameDataSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   // Populated user data from MongoDB
-  host: userSchema.optional(),
+  host: userSchema,
   challenger: userSchema.optional(),
 })
 

@@ -21,7 +21,7 @@ export async function getGameById(gameId: string): Promise<GameData> {
   return gameDataSchema.parse(result)
 }
 
-export async function joinGame(joinRequest: Omit<JoinGameRequest, "inviteCode"> & { inviteCode?: string }): Promise<JoinGameResponse> {
+export async function joinGame(joinRequest: Omit<JoinGameRequest, "inviteCode" | "userId"> & { inviteCode?: string, userId?: string }): Promise<JoinGameResponse> {
   try {
 
     const response = await fetch(`${API_BASE_URL}/api/games/join`, {
@@ -33,6 +33,7 @@ export async function joinGame(joinRequest: Omit<JoinGameRequest, "inviteCode"> 
     })
 
     const result = await response.json()
+    console.log('JOIN RESULT', result)
     return joinGameResponseSchema.parse(result)
   } catch (error) {
     console.error("Failed to join game:", error)

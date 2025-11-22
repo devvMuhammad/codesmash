@@ -32,13 +32,15 @@ interface GameWebSocketProviderProps {
   gameId: string
   userRole: PlayerRolesType
   user: Session["user"] | null
+  gameOver: boolean
 }
 
 export function GameWebSocketProvider({
   children,
   gameId,
   userRole,
-  user
+  user,
+  gameOver
 }: GameWebSocketProviderProps) {
   const socketRef = useRef<Socket | null>(null)
   const router = useRouter()
@@ -48,6 +50,7 @@ export function GameWebSocketProvider({
   const setOpponentConnected = useGameStore((state) => state.setOpponentConnected)
   const setOpponentData = useGameStore((state) => state.setOpponentData)
   const setGameStatus = useGameStore((state) => state.setGameStatus)
+  const setCurrentPlayerCode = useGameStore((state) => state.setCurrentPlayerCode)
   const setOpponentCode = useGameStore((state) => state.setOpponentCode)
   const setGameResult = useGameStore((state) => state.setGameResult)
   const setHostTestsPassed = useGameStore((state) => state.setHostTestsPassed)
@@ -56,7 +59,8 @@ export function GameWebSocketProvider({
 
   // Socket connection initialization
   useEffect(() => {
-    if (!gameId || !userRole) return
+    // don't connect if game is over
+    if (!gameId || !userRole || gameOver) return
 
     const socket = io(API_BASE_URL, {
       auth: {
@@ -159,9 +163,18 @@ export function GameWebSocketProvider({
     socket.on("opponent_code_update", (data: { code: string, role: PlayerRolesType }) => {
       console.log("Opponent code update:", data.role)
 
-      // Only update if it's not from the current user
-      if (data.role !== userRole) {
-        setOpponentCode(data.code)
+      // Spectators receive updates for both players
+      if (userRole === "spectator") {
+        if (data.role === "host") {
+          setCurrentPlayerCode(data.code)
+        } else if (data.role === "challenger") {
+          setOpponentCode(data.code)
+        }
+      } else {
+        // Host/challenger only update opponent code
+        if (data.role !== userRole) {
+          setOpponentCode(data.code)
+        }
       }
     })
 
@@ -205,7 +218,7 @@ export function GameWebSocketProvider({
       // Show result notification based on winner
       const isWinner = data.result.winner === user?.id
       if (isWinner) {
-        toast.success("Game Finished - You Won! 🎉", {
+        toast.success("Game Finished - You Won!", {
           description: data.result.message,
           duration: 5000,
         })
@@ -240,7 +253,7 @@ export function GameWebSocketProvider({
     return () => {
       socket.disconnect()
     }
-  }, [gameId, userRole, user, setConnected, setOpponentConnected, setOpponentData, setGameStatus, setOpponentCode, setGameResult, setHostTestsPassed, setChallengerTestsPassed, setTimeRemaining])
+  }, [gameId, userRole, user, gameOver, setConnected, setOpponentConnected, setOpponentData, setGameStatus, setCurrentPlayerCode, setOpponentCode, setGameResult, setHostTestsPassed, setChallengerTestsPassed, setTimeRemaining])
 
   // Named emit functions
   const sendCodeUpdate = useCallback((code: string) => {

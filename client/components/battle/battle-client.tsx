@@ -10,6 +10,8 @@ import { GameResultPanel } from "@/components/battle/results/game-result-panel"
 import { Panel, PanelGroup } from "react-resizable-panels"
 import { GameData, JoinGameResponse } from "@/lib/validations/game"
 import { PreGameContent } from "@/components/battle/game-states/pre-game-content"
+import { SpectatorPreGameContent } from "@/components/battle/spectator/spectator-pre-game-content"
+import { SpectatorBattleView } from "@/components/battle/spectator/spectator-battle-view"
 import DuplicateChallenger from "./game-states/duplicate-challenger"
 import { Session } from "@/lib/auth-client"
 import { useGameStore } from "@/providers/game-store-provider"
@@ -27,6 +29,7 @@ export function BattleClient({ gameData, joinResult, user }: BattleClientContent
 
   const gameStatus = useGameStore((state) => state.gameStatus);
   const showDuplicateModal = joinResult.success === false && joinResult.role === 'spectator' && joinResult.message.includes('already joined as challenger')
+  const userRole = joinResult.role
 
   // Show game result panel if game is completed
   if (gameStatus === 'completed') {
@@ -42,6 +45,26 @@ export function BattleClient({ gameData, joinResult, user }: BattleClientContent
     )
   }
 
+  // view for spectator - separate from host/challenger
+  if (userRole === 'spectator') {
+    return (
+      <div className="h-screen flex flex-col bg-background overflow-hidden">
+        <BattleNavbar
+          gameId={gameData._id}
+          inviteCode={gameData.inviteCode}
+        />
+        <div className="flex-1 flex min-h-0">
+          {gameStatus === 'waiting' || gameStatus === 'ready_to_start' ? (
+            <SpectatorPreGameContent gameData={gameData} />
+          ) : (
+            <SpectatorBattleView />
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // view for participant - host/challenger
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden">
       <DuplicateChallenger display={showDuplicateModal} />
@@ -84,7 +107,6 @@ export function BattleClient({ gameData, joinResult, user }: BattleClientContent
               </Panel>
             </PanelGroup>
         }
-
       </div>
     </div>
   )

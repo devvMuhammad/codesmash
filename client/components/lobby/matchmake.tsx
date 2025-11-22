@@ -3,14 +3,10 @@
 import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { Zap, Swords } from "lucide-react"
+import { Swords } from "lucide-react"
 import { motion } from "framer-motion"
 
-interface MatchmakeProps {
-  children?: React.ReactNode
-}
-
-export function Matchmake({ children }: MatchmakeProps) {
+export function Matchmake() {
   const [open, setOpen] = useState(false)
   const [dots, setDots] = useState("")
   const [searchText, setSearchText] = useState("Finding opponent")

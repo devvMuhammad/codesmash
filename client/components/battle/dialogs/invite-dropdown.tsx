@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { UserPlus, Users, Copy, CheckCircle, ChevronDown } from "lucide-react"
 import { generateInviteLink } from "@/lib/utils"
+import { useGameStore } from "@/providers/game-store-provider"
 
 interface InviteDropdownProps {
   gameId: string
@@ -18,6 +19,8 @@ interface InviteDropdownProps {
 }
 
 export function InviteDropdown({ gameId, inviteCode, disabled = false }: InviteDropdownProps) {
+  const userRole = useGameStore(state => state.userRole)
+
   const [copiedType, setCopiedType] = useState<'challenger' | 'spectator' | null>(null)
 
   const challengerInviteLink = generateInviteLink(inviteCode, gameId)
@@ -32,6 +35,32 @@ export function InviteDropdown({ gameId, inviteCode, disabled = false }: InviteD
       console.error("Failed to copy:", err)
     }
   }
+
+  if (userRole === 'spectator') {
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        className="bg-purple-600/10 text-purple-400 border-purple-600/20 hover:bg-purple-600/20"
+        onClick={() => copyToClipboard(spectatorLink, 'spectator')}
+        disabled={disabled}
+      >
+        {copiedType === 'spectator' ? (
+          <>
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Copied!
+          </>
+        ) : (
+          <>
+            <Users className="h-4 w-4 mr-2" />
+            Invite Spectator
+            <Copy className="h-4 w-4 ml-2" />
+          </>
+        )}
+      </Button>
+    )
+  }
+
 
   return (
     <DropdownMenu>

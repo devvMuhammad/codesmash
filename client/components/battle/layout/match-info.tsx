@@ -3,7 +3,6 @@
 import { Badge } from "@/components/ui/badge"
 import { useGameStore } from "@/providers/game-store-provider"
 import { useShallow } from 'zustand/react/shallow'
-import { BattleTimer } from "./battle-timer"
 
 export function MatchInfo() {
   const {
