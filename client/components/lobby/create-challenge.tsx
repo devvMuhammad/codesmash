@@ -7,7 +7,9 @@ import { UserPlus } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { CreateChallengeForm } from "@/components/forms/create-challenge-form"
 import { ShareInviteLink } from "./share-invite-link"
+import { AuthRequiredFallback } from "./auth-required-fallback"
 import { useCreateChallenge } from "@/hooks/use-create-challenge"
+import { useSession } from "@/lib/auth-client"
 
 interface CreateChallengeProps {
   children?: React.ReactNode
@@ -15,6 +17,7 @@ interface CreateChallengeProps {
 
 export function CreateChallenge({ children }: CreateChallengeProps) {
   const [open, setOpen] = useState(false)
+  const { data: session, isPending: isLoading } = useSession()
 
   const { form, mutation, step, gameData, onSubmit, resetChallenge } = useCreateChallenge()
 
@@ -46,7 +49,13 @@ export function CreateChallenge({ children }: CreateChallengeProps) {
         </DialogHeader>
 
         <AnimatePresence mode="wait">
-          {step === "form" && (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+            </div>
+          ) : !session?.user ? (
+            <AuthRequiredFallback />
+          ) : step === "form" ? (
             <motion.div
               key="form"
               initial={{ opacity: 0, x: -20 }}
@@ -61,9 +70,7 @@ export function CreateChallenge({ children }: CreateChallengeProps) {
                 error={mutation.error?.message}
               />
             </motion.div>
-          )}
-
-          {step === "success" && gameData && (
+          ) : step === "success" && gameData ? (
             <motion.div
               key="success"
               initial={{ opacity: 0, x: 20 }}
@@ -72,7 +79,7 @@ export function CreateChallenge({ children }: CreateChallengeProps) {
             >
               <ShareInviteLink gameData={gameData} onDone={handleClose} />
             </motion.div>
-          )}
+          ) : null}
         </AnimatePresence>
       </DialogContent>
     </Dialog>
