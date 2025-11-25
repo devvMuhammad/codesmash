@@ -4,6 +4,8 @@ import { Panel, PanelResizeHandle } from "react-resizable-panels"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp } from "lucide-react"
 import { OutputTerminal } from "../results/output-terminal"
+import { SampleInputView } from "../results/sample-input-view"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useGameStore } from "@/providers/game-store-provider"
 import { useShallow } from 'zustand/react/shallow'
 
@@ -13,16 +15,17 @@ interface ConsolePanelProps {
 }
 
 export function ConsolePanel({ collapsed, onCollapse }: ConsolePanelProps) {
-  const { consoleOutput } = useGameStore(
+  const { consoleOutput, problem } = useGameStore(
     useShallow((state) => ({
       consoleOutput: state.consoleOutput,
+      problem: state.problem,
     }))
   )
 
   if (collapsed) {
     return (
       <div className="h-12 border-t border-border/40 bg-muted/10 flex items-center justify-between px-4">
-        <span className="text-sm font-medium text-muted-foreground">Console Output</span>
+        <span className="text-sm font-medium text-muted-foreground">Console</span>
         <Button
           variant="ghost"
           size="sm"
@@ -42,7 +45,7 @@ export function ConsolePanel({ collapsed, onCollapse }: ConsolePanelProps) {
       <Panel defaultSize={30} minSize={15} maxSize={50} className="border-t border-border/40">
         <div className="h-full flex flex-col">
           <div className="h-12 border-b border-border/40 flex items-center justify-between px-4 bg-muted/20">
-            <span className="text-sm font-medium text-muted-foreground">Console Output</span>
+            <span className="text-sm font-medium text-muted-foreground">Console</span>
             <Button
               variant="ghost"
               size="sm"
@@ -54,7 +57,23 @@ export function ConsolePanel({ collapsed, onCollapse }: ConsolePanelProps) {
             </Button>
           </div>
           <div className="flex-1 min-h-0">
-            <OutputTerminal output={consoleOutput} />
+            <Tabs defaultValue="sample-input" className="h-full flex flex-col">
+              <div className="px-4 pt-3 pb-1">
+                <TabsList>
+                  <TabsTrigger value="sample-input">Sample Input</TabsTrigger>
+                  <TabsTrigger value="result">Result</TabsTrigger>
+                </TabsList>
+              </div>
+              <TabsContent value="sample-input" className="flex-1 min-h-0 mt-0 px-0">
+                <SampleInputView
+                  sampleTestCases={problem?.sampleTestCases || ""}
+                  sampleTestCasesOutput={problem?.sampleTestCasesOutput || ""}
+                />
+              </TabsContent>
+              <TabsContent value="result" className="flex-1 min-h-0 mt-0 px-0">
+                <OutputTerminal output={consoleOutput} />
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </Panel>
