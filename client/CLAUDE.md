@@ -51,13 +51,16 @@ POST /api/games              # Create new game
 GET  /api/games/:gameId      # Get single game details
 GET  /api/games/live         # Get live battles (in_progress games, limit 20)
 GET  /api/games/open         # Get open challenges (waiting games, limit 20)
+GET  /api/users/leaderboard  # Get top 100 players by aura (leaderboard)
 GET  /api/users/:userId/challenges  # Get user's challenges
 ```
 
 #### Integration Files
 - **`lib/api/game.ts`**: Server API client functions for individual game operations
 - **`lib/api/games.ts`**: Server API client functions for lobby (live battles, open challenges)
+- **`lib/api/user.ts`**: Server API client functions for user operations (session, leaderboard)
 - **`lib/validations/game.ts`**: Zod schemas matching server types
+- **`lib/validations/user.ts`**: Zod schemas for user and leaderboard data
 - **`lib/config.ts`**: Server endpoint configuration
 - **`context/websocket-context.tsx`**: Socket.IO client integration
 

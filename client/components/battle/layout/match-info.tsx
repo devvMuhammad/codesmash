@@ -6,12 +6,12 @@ import { useShallow } from 'zustand/react/shallow'
 
 export function MatchInfo() {
   const {
-    isConnected,
+    currentPlayerConnected,
     opponentConnected,
     opponentName,
   } = useGameStore(
     useShallow((state) => ({
-      isConnected: state.isConnected,
+      currentPlayerConnected: state.currentPlayerConnected,
       opponentConnected: state.opponentConnected,
       opponentName: state.opponentData?.name,
     }))
@@ -23,7 +23,7 @@ export function MatchInfo() {
       <div className="flex items-center gap-3">
         <Badge
           variant="outline"
-          className={`${isConnected
+          className={`${currentPlayerConnected
             ? 'bg-green-500/10 text-green-400 border-green-500/20'
             : 'bg-red-500/10 text-red-400 border-red-500/20'
             }`}

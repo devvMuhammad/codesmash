@@ -60,6 +60,8 @@ export const problemSchema = z.object({
   }),
   correctOutput: z.string(),
   testCases: z.string(),
+  sampleTestCases: z.string(),
+  sampleTestCasesOutput: z.string(),
   totalTestCases: z.number(), // Calculated field from server
 })
 

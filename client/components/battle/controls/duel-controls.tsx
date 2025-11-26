@@ -17,19 +17,19 @@ export function DuelControls({ onRunCode, onSubmitCode, onForfeit }: DuelControl
     timeRemaining,
     gameStatus,
     currentPlayerCode,
-    isConnected,
+    currentPlayerConnected,
     opponentConnected,
   } = useGameStore(
     useShallow((state) => ({
       timeRemaining: state.timeRemaining,
       gameStatus: state.gameStatus,
       currentPlayerCode: state.currentPlayerCode,
-      isConnected: state.isConnected,
+      currentPlayerConnected: state.currentPlayerConnected,
       opponentConnected: state.opponentConnected,
     }))
   )
 
-  const playersCount = (isConnected ? 1 : 0) + (opponentConnected ? 1 : 0)
+  const playersCount = (currentPlayerConnected ? 1 : 0) + (opponentConnected ? 1 : 0)
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)

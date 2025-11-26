@@ -23,7 +23,7 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
   const { challengerQuit, startBattle, markChallengerReady } = useGame()
 
   // Listen to connection states and player data from Zustand store
-  const isConnected = useGameStore((state) => state.isConnected)
+  const currentPlayerConnected = useGameStore((state) => state.currentPlayerConnected)
   const opponentConnected = useGameStore((state) => state.opponentConnected)
   const currentPlayerData = useGameStore((state) => state.currentPlayerData)
   const opponentData = useGameStore((state) => state.opponentData)
@@ -36,8 +36,8 @@ export function PreGameContent({ gameData, joinResult }: PreGameContentProps) {
   const userRole = joinResult?.role || (currentUserId === gameData.hostId ? 'host' : 'spectator')
 
   // connections
-  const isHostJoined = userRole === 'host' ? isConnected : opponentConnected
-  const isChallengerJoined = userRole === 'challenger' ? isConnected : opponentConnected
+  const isHostJoined = userRole === 'host' ? currentPlayerConnected : opponentConnected
+  const isChallengerJoined = userRole === 'challenger' ? currentPlayerConnected : opponentConnected
 
   // condition variables
   const bothPlayersJoined = isHostJoined && isChallengerJoined

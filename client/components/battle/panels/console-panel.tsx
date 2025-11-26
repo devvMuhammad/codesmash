@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp } from "lucide-react"
 import { OutputTerminal } from "../results/output-terminal"
 import { SampleInputView } from "../results/sample-input-view"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { useGameStore } from "@/providers/game-store-provider"
 import { useShallow } from 'zustand/react/shallow'
 
@@ -64,14 +65,18 @@ export function ConsolePanel({ collapsed, onCollapse }: ConsolePanelProps) {
                   <TabsTrigger value="result">Result</TabsTrigger>
                 </TabsList>
               </div>
-              <TabsContent value="sample-input" className="flex-1 min-h-0 mt-0 px-0">
-                <SampleInputView
-                  sampleTestCases={problem?.sampleTestCases || ""}
-                  sampleTestCasesOutput={problem?.sampleTestCasesOutput || ""}
-                />
+              <TabsContent value="sample-input" className="flex-1 min-h-0 mt-0">
+                <ScrollArea className="h-full">
+                  <SampleInputView
+                    sampleTestCases={problem?.sampleTestCases || ""}
+                    sampleTestCasesOutput={problem?.sampleTestCasesOutput || ""}
+                  />
+                </ScrollArea>
               </TabsContent>
-              <TabsContent value="result" className="flex-1 min-h-0 mt-0 px-0">
-                <OutputTerminal output={consoleOutput} />
+              <TabsContent value="result" className="flex-1 min-h-0 mt-0">
+                <ScrollArea className="h-full">
+                  <OutputTerminal output={consoleOutput} />
+                </ScrollArea>
               </TabsContent>
             </Tabs>
           </div>

@@ -18,13 +18,13 @@ export function SpectatorPreGameContent({ gameData }: SpectatorPreGameContentPro
   const {
     currentPlayerData,
     opponentData,
-    isConnected,
+    currentPlayerConnected,
     opponentConnected,
   } = useGameStore(
     useShallow((state) => ({
       currentPlayerData: state.currentPlayerData,
       opponentData: state.opponentData,
-      isConnected: state.isConnected,
+      currentPlayerConnected: state.currentPlayerConnected,
       opponentConnected: state.opponentConnected,
     }))
   )
@@ -32,7 +32,7 @@ export function SpectatorPreGameContent({ gameData }: SpectatorPreGameContentPro
   // For spectators: currentPlayerData = host, opponentData = challenger
   const hostData = currentPlayerData
   const challengerData = opponentData
-  const isHostConnected = isConnected
+  const isHostConnected = currentPlayerConnected
   const isChallengerConnected = opponentConnected
 
   // Get game settings from gameData

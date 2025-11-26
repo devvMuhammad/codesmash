@@ -22,7 +22,7 @@ export function SpectatorCodePanel({ role }: SpectatorCodePanelProps) {
     useShallow((state) => ({
       playerData: role === 'host' ? state.currentPlayerData : state.opponentData,
       code: role === 'host' ? state.currentPlayerCode : state.opponentCode,
-      isConnected: role === 'host' ? state.isConnected : state.opponentConnected,
+      isConnected: role === 'host' ? state.currentPlayerConnected : state.opponentConnected,
       testsPassed: role === 'host' ? state.hostTestsPassed : state.challengerTestsPassed,
       totalTests: state.problem?.totalTestCases || 0
     }))

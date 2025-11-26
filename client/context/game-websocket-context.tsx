@@ -47,6 +47,7 @@ export function GameWebSocketProvider({
 
   // Game store actions
   const setConnected = useGameStore((state) => state.setConnected)
+  const setCurrentPlayerConnected = useGameStore((state) => state.setCurrentPlayerConnected)
   const setOpponentConnected = useGameStore((state) => state.setOpponentConnected)
   const setOpponentData = useGameStore((state) => state.setOpponentData)
   const setGameStatus = useGameStore((state) => state.setGameStatus)
@@ -76,11 +77,23 @@ export function GameWebSocketProvider({
     socket.on("connect", () => {
       console.log("WebSocket connected:", socket.id)
       setConnected(true)
+
+      // For participants, currentPlayerConnected tracks their own connection
+      // For spectators, it's handled via player_joined event for the host
+      if (userRole !== "spectator") {
+        setCurrentPlayerConnected(true)
+      }
     })
 
     socket.on("disconnect", () => {
       console.log("WebSocket disconnected")
       setConnected(false)
+
+      // For participants, disconnect their own currentPlayerConnected
+      // For spectators, keep currentPlayerConnected as is (tracks host, not spectator)
+      if (userRole !== "spectator") {
+        setCurrentPlayerConnected(false)
+      }
     })
 
     // Game event handlers
@@ -99,6 +112,11 @@ export function GameWebSocketProvider({
         })
       }
 
+      // For spectators, track host connection via currentPlayerConnected
+      if (userRole === "spectator" && data.role === "host") {
+        setCurrentPlayerConnected(true)
+      }
+
       toast.success(`${data.user.name} has joined the game!`, {
         description: "Get Ready to Battle!",
         duration: 1000,
@@ -111,6 +129,11 @@ export function GameWebSocketProvider({
       // Update opponent connected state if it's not the current user
       if (data.role !== userRole) {
         setOpponentConnected(false)
+      }
+
+      // For spectators, track host disconnection via currentPlayerConnected
+      if (userRole === "spectator" && data.role === "host") {
+        setCurrentPlayerConnected(false)
       }
 
       toast.error(`${data.user.name} has left the game!`, {
@@ -195,8 +218,8 @@ export function GameWebSocketProvider({
         setChallengerTestsPassed(data.passedTests)
       }
 
-      // Show toast only for opponent progress
-      if (data.role !== userRole) {
+      // Show this toast to only challenger
+      if (data.role !== userRole && userRole === "challenger") {
         toast(`Opponent passed ${data.passedTests}/${data.totalTests} tests`, {
           description: `+${data.passedTests - data.previousPassed} tests`,
           duration: 3000,
@@ -253,7 +276,7 @@ export function GameWebSocketProvider({
     return () => {
       socket.disconnect()
     }
-  }, [gameId, userRole, user, gameOver, setConnected, setOpponentConnected, setOpponentData, setGameStatus, setCurrentPlayerCode, setOpponentCode, setGameResult, setHostTestsPassed, setChallengerTestsPassed, setTimeRemaining])
+  }, [gameId, userRole, user, gameOver, setConnected, setCurrentPlayerConnected, setOpponentConnected, setOpponentData, setGameStatus, setCurrentPlayerCode, setOpponentCode, setGameResult, setHostTestsPassed, setChallengerTestsPassed, setTimeRemaining])
 
   // Named emit functions
   const sendCodeUpdate = useCallback((code: string) => {

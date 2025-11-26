@@ -75,6 +75,7 @@ export const GameStoreProvider = ({
         ? gameData.challengerCode || ""
         : gameData.hostCode || "",
       isConnected: userRole === "host" ? gameData.hostJoined : gameData.challengerJoined,
+      currentPlayerConnected: userRole === "spectator" ? gameData.hostJoined : (userRole === "host" ? gameData.hostJoined : gameData.challengerJoined),
       opponentConnected: userRole === "host" ? gameData.challengerJoined : gameData.hostJoined,
       gameResult: gameData.result || null,
       problem: gameData.problem || null,

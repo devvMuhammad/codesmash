@@ -56,14 +56,14 @@ export function CurrentPlayerPanel({ collapsed, gameId }: CurrentPlayerPanelProp
 }
 
 function PlayerStatus() {
-  const isConnected = useGameStore(state => state.isConnected)
+  const currentPlayerConnected = useGameStore(state => state.currentPlayerConnected)
 
   return <div className="flex items-center gap-2">
     <span className="text-sm font-medium text-muted-foreground">You</span>
     <div className="flex items-center gap-1">
-      <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
-      <span className={`text-xs ${isConnected ? 'text-green-400' : 'text-red-400'}`}>
-        {isConnected ? 'Connected' : 'Disconnected'}
+      <div className={`w-2 h-2 rounded-full ${currentPlayerConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+      <span className={`text-xs ${currentPlayerConnected ? 'text-green-400' : 'text-red-400'}`}>
+        {currentPlayerConnected ? 'Connected' : 'Disconnected'}
       </span>
     </div>
   </div>

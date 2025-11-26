@@ -101,6 +101,7 @@ export interface GameState {
 
   // WebSocket state
   isConnected: boolean
+  currentPlayerConnected: boolean
   opponentConnected: boolean
 
   // Console output state
@@ -114,6 +115,7 @@ export interface GameState {
 export interface GameActions {
   // Connection actions
   setConnected: (connected: boolean) => void
+  setCurrentPlayerConnected: (connected: boolean) => void
   setOpponentConnected: (connected: boolean) => void
 
   // Player data actions
@@ -156,6 +158,7 @@ export const defaultInitState: GameState = {
   currentPlayerCode: "",
   opponentCode: "",
   isConnected: false,
+  currentPlayerConnected: false,
   opponentConnected: false,
   selectedLanguage: SUPPORTED_LANGUAGES[0].name,
   consoleOutput: null,
@@ -172,6 +175,9 @@ export const createGameStore = (
     // Connection actions
     setConnected: (connected: boolean) =>
       set({ isConnected: connected }),
+
+    setCurrentPlayerConnected: (connected: boolean) =>
+      set({ currentPlayerConnected: connected }),
 
     setOpponentConnected: (connected: boolean) =>
       set({ opponentConnected: connected }),
