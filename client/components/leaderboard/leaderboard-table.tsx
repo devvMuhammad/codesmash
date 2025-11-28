@@ -3,27 +3,14 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Flame, Trophy } from "lucide-react"
 import Link from "next/link"
-import type { LeaderboardPlayer } from "@/lib/validations/user"
+import { useQuery } from "@tanstack/react-query"
+import { leaderboardOptions } from "@/app/leaderboard/options"
+import LeaderboardSkeleton from "./leaderboard-skeleton"
 
-interface LeaderboardTableProps {
-  players: LeaderboardPlayer[]
-}
 
 function getAvatarInitial(name: string | undefined): string {
   if (!name) return "?"
   return name.charAt(0).toUpperCase()
-}
-
-function getUsername(player: LeaderboardPlayer): string {
-  // Extract username from email (part before @)
-  if (player.email) {
-    return player.email.split("@")[0]
-  }
-  // Fallback: generate from name
-  if (player.name) {
-    return player.name.toLowerCase().replace(/\s+/g, "_")
-  }
-  return "unknown"
 }
 
 function getRankIcon(rank: number) {
@@ -39,7 +26,13 @@ function getRankIcon(rank: number) {
   return null
 }
 
-export function LeaderboardTable({ players }: LeaderboardTableProps) {
+export function LeaderboardTable() {
+
+  const { data: players, isLoading, isError, isRefetching, error } = useQuery(leaderboardOptions)
+
+  if (isError) return <h1>Something just went wrong! {error.message}</h1>
+  if (isLoading || isRefetching || !players) return <LeaderboardSkeleton />
+
   if (players.length === 0) {
     return (
       <div className="p-8 bg-muted/30 rounded-lg">
@@ -56,15 +49,12 @@ export function LeaderboardTable({ players }: LeaderboardTableProps) {
       {players.map((player, index) => {
         const rank = index + 1
         const rankIcon = getRankIcon(rank)
-        const username = getUsername(player)
         const isEven = index % 2 === 0
 
         return (
           <div
             key={player._id}
-            className={`p-4 transition-colors duration-200 hover:bg-accent/50 ${
-              isEven ? "bg-background" : "bg-muted/30"
-            }`}
+            className={`p-4 transition-colors duration-200 ${isEven ? "bg-background" : "bg-muted/30"}`}
           >
             <div className="flex items-center justify-between">
               {/* Rank and Player Info */}
@@ -93,7 +83,7 @@ export function LeaderboardTable({ players }: LeaderboardTableProps) {
                   >
                     {player.name || "Unknown"}
                   </Link>
-                  <p className="text-sm text-muted-foreground">@{username}</p>
+                  <p className="text-sm text-muted-foreground">@{player.username}</p>
                 </div>
               </div>
 
