@@ -2,9 +2,9 @@ import { z } from "zod"
 
 export const leaderboardPlayerSchema = z.object({
   _id: z.string(),
-  name: z.string().optional(),
-  email: z.string().optional(),
-  image: z.string().optional(),
+  username: z.string(),
+  name: z.string(),
+  image: z.string(),
   aura: z.number().default(1000),
 })
 

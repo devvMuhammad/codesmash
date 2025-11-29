@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { Code } from "lucide-react"
 import { ThemeSwitcher } from "@/components/theme-switcher"
 import { UserDropdown } from "@/components/user-dropdown"
 import { Button } from "@/components/ui/button"
@@ -17,8 +16,7 @@ export function CommonNavbar() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-8">
             <Link href="/" className="flex items-center space-x-2">
-              <Code className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-foreground">CodeSmash</span>
+              <span className="text-xl font-bold text-primary">CodeSmash</span>
             </Link>
 
             <div className="flex items-center space-x-6">

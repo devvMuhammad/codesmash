@@ -13,19 +13,11 @@ import { User, Settings, Trophy, LogOut, Flame, Loader2, Target } from "lucide-r
 import Link from "next/link"
 import { useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { signOut } from "@/lib/auth-client"
+import { Session, signOut } from "@/lib/auth-client"
 
 
 interface UserDropdownProps {
-  user: {
-    id: string
-    name: string
-    email: string
-    image?: string | null
-    createdAt?: Date
-    updatedAt?: Date
-    emailVerified?: boolean
-  }
+  user: Session['user']
 }
 
 export function UserDropdown({ user }: UserDropdownProps) {
@@ -63,11 +55,11 @@ export function UserDropdown({ user }: UserDropdownProps) {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.name}</p>
+            <p className="text-sm font-medium leading-none">@{user.username}</p>
             <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
             <div className="flex items-center space-x-1 text-xs text-muted-foreground mt-1">
               <Flame className="h-3 w-3 text-orange-500" />
-              <span>1,250 Aura</span>
+              <span>{user.aura?.toLocaleString() || 0} Aura Points</span>
             </div>
           </div>
         </DropdownMenuLabel>
