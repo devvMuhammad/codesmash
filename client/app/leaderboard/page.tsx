@@ -1,7 +1,9 @@
 import { CommonNavbar } from "@/components/common-navbar"
 import { LeaderboardTable } from "@/components/leaderboard/leaderboard-table"
 import { RefreshButton } from "@/components/leaderboard/refresh-button"
+import { getQueryClient } from "@/lib/get-query-client"
 import type { Metadata } from "next"
+import { leaderboardOptions } from "./options"
 
 export const metadata: Metadata = {
   title: "Leaderboard",
@@ -10,8 +12,8 @@ export const metadata: Metadata = {
 
 export default async function LeaderboardPage() {
 
-  // const queryClient = getQueryClient()
-  // await queryClient.prefetchQuery(leaderboardOptions)
+  const queryClient = getQueryClient()
+  void queryClient.prefetchQuery(leaderboardOptions)
 
   return (
     <div className="min-h-screen bg-background">
