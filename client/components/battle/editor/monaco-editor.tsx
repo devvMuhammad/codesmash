@@ -1,5 +1,7 @@
 "use client"
 
+import { useTheme } from "next-themes"
+import { useEffect, useRef } from "react"
 import Editor, { OnMount } from "@monaco-editor/react"
 
 interface MonacoEditorProps {
@@ -11,8 +13,14 @@ interface MonacoEditorProps {
 }
 
 export function MonacoEditor({ value, onChange, language, readOnly = false }: MonacoEditorProps) {
-  const handleEditorDidMount: OnMount = (_, monaco) => {
-    // Configure Monaco Editor theme
+  const { theme, resolvedTheme } = useTheme()
+  const currentTheme = resolvedTheme || theme || "dark"
+  const monacoRef = useRef<typeof import("monaco-editor") | null>(null)
+
+  const handleEditorDidMount: OnMount = (editor, monaco) => {
+    monacoRef.current = monaco
+
+    // Configure Monaco Editor dark theme
     monaco.editor.defineTheme("CodeSmashDark", {
       base: "vs-dark",
       inherit: true,
@@ -40,16 +48,55 @@ export function MonacoEditor({ value, onChange, language, readOnly = false }: Mo
       },
     })
 
-    // Apply the theme
-    monaco.editor.setTheme("CodeSmashDark")
+    // Configure Monaco Editor light theme
+    monaco.editor.defineTheme("CodeSmashLight", {
+      base: "vs",
+      inherit: true,
+      rules: [
+        { token: "comment", foreground: "6A737D" },
+        { token: "keyword", foreground: "0969DA" },
+        { token: "string", foreground: "0A3069" },
+        { token: "number", foreground: "005CC5" },
+        { token: "function", foreground: "6F42C1" },
+        { token: "variable", foreground: "E36209" },
+      ],
+      colors: {
+        "editor.background": "#ffffff",
+        "editor.foreground": "#24292F",
+        "editor.lineHighlightBackground": "#f6f8fa",
+        "editor.selectionBackground": "#B6E3FF",
+        "editor.inactiveSelectionBackground": "#E8EAED",
+        "editorCursor.foreground": "#0969DA",
+        "editorLineNumber.foreground": "#8C959F",
+        "editorLineNumber.activeForeground": "#24292F",
+        "editor.selectionHighlightBackground": "#B6E3FF80",
+        "editor.wordHighlightBackground": "#B6E3FF80",
+        "editor.findMatchBackground": "#FFD33D",
+        "editor.findMatchHighlightBackground": "#FFD33D80",
+      },
+    })
+
+    // Apply the theme based on current theme
+    const themeName = currentTheme === "dark" ? "CodeSmashDark" : "CodeSmashLight"
+    monaco.editor.setTheme(themeName)
   }
+
+  // Update theme when it changes
+  useEffect(() => {
+    if (!monacoRef.current) return
+
+    const themeName = currentTheme === "dark" ? "CodeSmashDark" : "CodeSmashLight"
+    monacoRef.current.editor.setTheme(themeName)
+  }, [currentTheme])
+
+  const themeName = currentTheme === "dark" ? "CodeSmashDark" : "CodeSmashLight"
 
   return (
     <Editor
       height="100%"
       language={language}
       value={value}
-      theme="CodeSmashDark"
+      theme={themeName}
       onChange={(value) => onChange(value || "")}
       onMount={handleEditorDidMount}
       options={{

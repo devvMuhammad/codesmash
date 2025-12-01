@@ -6,6 +6,8 @@ import { CommonNavbar } from "@/components/common-navbar"
 import type { Metadata } from "next"
 import { RecentActivityTimeline } from "@/components/profile/recent-activity-timeline"
 
+import { ProfileNotFound } from "@/components/profile/profile-not-found"
+
 interface ProfilePageProps {
   params: {
     profileId: string
@@ -13,16 +15,28 @@ interface ProfilePageProps {
 }
 
 export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata> {
-  const profile = await getUserProfile(params.profileId)
+  try {
+    const profile = await getUserProfile(params.profileId)
 
-  return {
-    title: `${profile.user.name} (@${profile.user.username})`,
-    description: `View ${profile.user.name}'s CodeSmash profile - Rank #${profile.stats.globalRank}, ${profile.stats.winRate}% win rate, ${profile.stats.totalBattles} battles`,
+    return {
+      title: `${profile.user.name} (@${profile.user.username})`,
+      description: `View ${profile.user.name}'s CodeSmash profile - Rank #${profile.stats.globalRank}, ${profile.stats.winRate}% win rate, ${profile.stats.totalBattles} battles`,
+    }
+  } catch {
+    return {
+      title: "Profile Not Found",
+      description: "This profile could not be found on CodeSmash",
+    }
   }
 }
 
 export default async function ProfilePage({ params }: ProfilePageProps) {
-  const profile = await getUserProfile(params.profileId)
+  let profile
+  try {
+    profile = await getUserProfile(params.profileId)
+  } catch {
+    return <ProfileNotFound />
+  }
 
   return (
     <div className="min-h-screen bg-background">

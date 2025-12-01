@@ -23,7 +23,7 @@ export default function Error({
           </div>
           <CardTitle className="text-2xl md:text-3xl">Oops! Something went wrong</CardTitle>
           <CardDescription className="text-base">
-            We encountered an unexpected error. Don&apos;t worry, our team has been notified.
+            We encountered an unexpected error.
           </CardDescription>
         </CardHeader>
 

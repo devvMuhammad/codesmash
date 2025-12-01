@@ -28,12 +28,10 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
           <p className="text-lg text-muted-foreground mb-2">@{user.username}</p>
           <p className="text-sm text-muted-foreground mb-3">Member since: {user.memberSince}</p>
 
-          {user.currentStreak > 0 && (
-            <div className="flex items-center gap-2 text-sm">
-              <Flame className="h-5 w-5 text-orange-500" />
-              <span className="font-semibold text-foreground">{user.currentStreak} day streak</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 text-sm">
+            <Flame className="h-5 w-5 text-orange-500" />
+            <span className="font-semibold text-foreground">{user.aura} Aura</span>
+          </div>
         </div>
       </div>
     </Card>

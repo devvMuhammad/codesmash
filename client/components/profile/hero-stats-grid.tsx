@@ -11,7 +11,7 @@ export function HeroStatsGrid({ stats }: HeroStatsGridProps) {
     {
       title: "Rank",
       value: `#${stats.globalRank.toLocaleString()}`,
-      subtitle: `Top ${stats.rankPercentile}%`,
+      subtitle: `${stats.aura} Aura`,
       icon: Trophy,
       iconColor: "text-yellow-500",
     },
