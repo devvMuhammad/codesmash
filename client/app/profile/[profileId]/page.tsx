@@ -9,14 +9,15 @@ import { RecentActivityTimeline } from "@/components/profile/recent-activity-tim
 import { ProfileNotFound } from "@/components/profile/profile-not-found"
 
 interface ProfilePageProps {
-  params: {
+  params: Promise<{
     profileId: string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: ProfilePageProps): Promise<Metadata> {
   try {
-    const profile = await getUserProfile(params.profileId)
+    const { profileId } = await params
+    const profile = await getUserProfile(profileId)
 
     return {
       title: `${profile.user.name} (@${profile.user.username})`,
@@ -33,7 +34,8 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
 export default async function ProfilePage({ params }: ProfilePageProps) {
   let profile
   try {
-    profile = await getUserProfile(params.profileId)
+    const { profileId } = await params
+    profile = await getUserProfile(profileId)
   } catch {
     return <ProfileNotFound />
   }
