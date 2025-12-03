@@ -26,7 +26,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
         <div className="flex-1">
           <h1 className="text-3xl font-bold text-foreground mb-1">{user.name}</h1>
           <p className="text-lg text-muted-foreground mb-2">@{user.username}</p>
-          <p className="text-sm text-muted-foreground mb-3">Member since: {user.memberSince}</p>
+          <p className="text-sm mb-3 font-bold"> <span className="text-muted-foreground font-normal">Member since: </span>{user.memberSince}</p>
 
           <div className="flex items-center gap-2 text-sm">
             <Flame className="h-5 w-5 text-orange-500" />

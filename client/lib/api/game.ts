@@ -33,7 +33,6 @@ export async function joinGame(joinRequest: Omit<JoinGameRequest, "inviteCode" |
     })
 
     const result = await response.json()
-    console.log('JOIN RESULT', result)
     return joinGameResponseSchema.parse(result)
   } catch (error) {
     console.error("Failed to join game:", error)

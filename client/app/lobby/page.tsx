@@ -20,8 +20,6 @@ export default async function LobbyPage() {
     getOpenChallenges(userId),
   ])
 
-  console.log("live", liveBattles)
-
   return (
     <div className="min-h-screen bg-background">
       <CommonNavbar />

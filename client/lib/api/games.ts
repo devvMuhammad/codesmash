@@ -40,7 +40,7 @@ export interface UserChallenge {
   host: User
   challenger?: User
   inviteCode: string
-  status: "waiting" | "in_progress" | "completed" | "cancelled"
+  status: "waiting" | "in_progress" | "completed" | "cancelled" | "ready_to_start"
   problem: string
   difficulty: "easy" | "medium" | "hard"
   timeLimit: number

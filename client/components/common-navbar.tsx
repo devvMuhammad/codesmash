@@ -26,8 +26,8 @@ export function CommonNavbar() {
               <Link href="/leaderboard" className="text-foreground hover:text-primary transition-colors">
                 Leaderboard
               </Link>
-              <Link href="/practice" className="text-foreground hover:text-primary transition-colors">
-                Practice
+              <Link href="/user/challenges" className="text-foreground hover:text-primary transition-colors">
+                My Challenges
               </Link>
             </div>
           </div>

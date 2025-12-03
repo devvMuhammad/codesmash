@@ -76,7 +76,7 @@ export function RecentActivityTimeline({ battles }: RecentActivityTimelineProps)
                         </span>
                       </div>
                       <p className="text-sm text-foreground font-medium mt-1 truncate">
-                        {battle.problem.title}
+                        <span className="text-muted-foreground">Problem:</span> {battle.problem.title}
                       </p>
                     </div>
                   </div>
@@ -92,7 +92,7 @@ export function RecentActivityTimeline({ battles }: RecentActivityTimelineProps)
                 <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
                   <div className="flex items-center gap-1.5">
                     <Calendar className="h-3.5 w-3.5" />
-                    <span>{battle.completedAt}</span>
+                    <span>{battle.timeAgo} ago</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Clock className="h-3.5 w-3.5" />

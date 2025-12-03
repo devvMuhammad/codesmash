@@ -36,7 +36,9 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   try {
     const { profileId } = await params
     profile = await getUserProfile(profileId)
-  } catch {
+    console.log("profile", profile)
+  } catch (error) {
+    console.error("Error fetching profile:", error)
     return <ProfileNotFound />
   }
 
