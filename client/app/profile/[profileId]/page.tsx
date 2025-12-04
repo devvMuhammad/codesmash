@@ -42,6 +42,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     return <ProfileNotFound />
   }
 
+  console.log("profile", profile)
   return (
     <div className="min-h-screen bg-background">
       <CommonNavbar />

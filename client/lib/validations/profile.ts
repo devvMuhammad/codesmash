@@ -27,6 +27,7 @@ export type ProfileStats = z.infer<typeof profileStatsSchema>
 export const difficultyStatsSchema = z.object({
   wins: z.number(),
   losses: z.number(),
+  draws: z.number(),
   games: z.number(),
 })
 

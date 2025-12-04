@@ -35,13 +35,20 @@ export async function createGame(data: CreateGameFormData): Promise<CreateGameRe
   return createGameResponseSchema.parse(result)
 }
 
+export interface ProblemInfo {
+  _id: string
+  title: string
+  difficulty: "easy" | "medium" | "hard"
+  description: string
+}
+
 export interface UserChallenge {
   _id: string
   host: User
   challenger?: User
   inviteCode: string
   status: "waiting" | "in_progress" | "completed" | "cancelled" | "ready_to_start"
-  problem: string
+  problem: ProblemInfo
   difficulty: "easy" | "medium" | "hard"
   timeLimit: number
   hostJoined: boolean

@@ -80,7 +80,7 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
       <Card className="p-5 hover:shadow-lg hover:shadow-primary/20 transition-all duration-300 group hover:border-primary/50">
         <div className="space-y-4">
           {/* Top Row - Players */}
-          <div className="flex items-center justify-center gap-6">
+          <div className="flex items-center justify-between gap-6">
             {/* Host */}
             <div className="flex items-center gap-3">
               <Avatar className="h-12 w-12 border-2 border-border">
@@ -135,11 +135,16 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
           </div>
 
           {/* Second Row - Problem Info */}
-          <div className="flex items-center gap-3 pb-3 border-b border-border">
-            <Target className="h-5 w-5 text-muted-foreground" />
-            <span className="text-sm font-medium text-foreground">Problem #{challenge.problem}</span>
-            <Badge className={getDifficultyColor(challenge.difficulty)}>
-              {challenge.difficulty.charAt(0).toUpperCase() + challenge.difficulty.slice(1)}
+          <div className="flex items-center justify-between gap-3 pb-3 border-b border-border">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <Target className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              <div className="flex flex-col flex-1 min-w-0">
+                <span className="text-sm font-semibold text-foreground truncate">{challenge.problem.title}</span>
+                <p className="text-xs text-muted-foreground line-clamp-1">{challenge.problem.description}</p>
+              </div>
+            </div>
+            <Badge className={getDifficultyColor(challenge.problem.difficulty)}>
+              {challenge.problem.difficulty.charAt(0).toUpperCase() + challenge.problem.difficulty.slice(1)}
             </Badge>
           </div>
 
