@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CodeSmash client
 
-## Getting Started
+The frontend for CodeSmash, built with Next.js 15 (App Router), React 19, and Tailwind CSS 4. Components come from shadcn/ui on top of Radix. The battle screen uses the Monaco editor, and live updates come over Socket.IO from the server in `../server`.
 
-First, run the development server:
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app runs on http://localhost:3000. It needs the server running to do anything useful.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Create `.env.local` with:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
-## Learn More
+`NEXT_PUBLIC_API_BASE_URL` is where the server is listening. `NEXT_PUBLIC_APP_URL` is this app's own URL, which the login flow uses as the redirect target after Google sign-in.
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `pnpm dev` starts the dev server with Turbopack.
+- `pnpm build` makes a production build.
+- `pnpm start` serves that build.
+- `pnpm lint` runs ESLint.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Where things are
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/` has the routes. `lobby` lists open challenges and live battles, `battle/[gameId]` is the game itself, and `leaderboard`, `profile`, and `user` cover the rest.
+- `components/` has the UI, with shadcn primitives in `components/ui`.
+- `context/` holds the Socket.IO providers that keep both players' editors in sync.
+- `lib/api/` has the fetch helpers for the server's REST routes, and `lib/validations/` has the Zod schemas that check what comes back.
